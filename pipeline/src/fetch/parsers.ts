@@ -268,14 +268,19 @@ function stripHash(u: string): string {
 }
 
 const DROP_ELEMENTS = ['script', 'style', 'noscript', 'svg', 'nav', 'header', 'footer', 'form', 'template', 'iframe', 'head', 'button', 'select'];
-const BLOCK_TAGS =
-  /<\/?(?:p|div|br|li|ul|ol|h[1-6]|tr|td|th|table|section|article|aside|main|blockquote|dd|dt|dl|figcaption|figure|hr|pre|time|address|summary|details)\b[^>]*>/gi;
+/** Attribute text inside a tag, quote-aware: embedded JSON like data-x='{"a":"1 > 2"}' doesn't end the tag. */
+const ATTRS = `(?:[^>"']|"[^"]*"|'[^']*')*`;
+const BLOCK_TAGS = new RegExp(
+  `<\\/?(?:p|div|br|li|ul|ol|h[1-6]|tr|td|th|table|section|article|aside|main|blockquote|dd|dt|dl|figcaption|figure|hr|pre|time|address|summary|details)\\b${ATTRS}>`,
+  'gi',
+);
+const ANY_TAG = new RegExp(`<\\/?[a-zA-Z][\\w:-]*${ATTRS}>`, 'g');
 
 /** Remove whole elements (with content). Repeats so simple nesting of the same tag is handled. */
 export function stripElements(html: string, names: string[]): string {
   let out = html;
   for (const name of names) {
-    const re = new RegExp(`<${name}\\b[^>]*>[\\s\\S]*?<\\/${name}\\s*>`, 'gi');
+    const re = new RegExp(`<${name}\\b${ATTRS}>[\\s\\S]*?<\\/${name}\\s*>`, 'gi');
     for (let i = 0; i < 5; i++) {
       const next = out.replace(re, ' ');
       if (next === out) break;
@@ -292,10 +297,13 @@ export function stripElements(html: string, names: string[]): string {
  */
 export function htmlToText(html: string): PageText {
   const title = pageTitle(html);
-  let s = html.replace(/<!--[\s\S]*?-->/g, ' ').replace(/<!\[CDATA\[[\s\S]*?\]\]>/g, ' ');
+  let s = html
+    .replace(/<!--[\s\S]*?-->/g, ' ')
+    .replace(/<!\[CDATA\[[\s\S]*?\]\]>/g, ' ')
+    .replace(/<![a-zA-Z][^>]*>|<\?[\s\S]*?\?>/g, ' '); // doctype, XML declarations
   s = stripElements(s, DROP_ELEMENTS);
   // Inline tags vanish (as in a browser) so "via <a>SISTIC</a>." stays "via SISTIC." for quote matching.
-  s = s.replace(BLOCK_TAGS, '\n').replace(/<[^>]*>/g, '');
+  s = s.replace(BLOCK_TAGS, '\n').replace(ANY_TAG, '');
   s = decodeEntities(s);
   const text = s
     .split('\n')

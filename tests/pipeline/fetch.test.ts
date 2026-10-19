@@ -229,6 +229,11 @@ describe('htmlToText', () => {
     expect(t.text).not.toMatch(/Subscribe|Instagram|@type|<|&nbsp;/);
   });
 
+  it('does not end a tag at a > inside a quoted attribute (embedded JSON) and drops the doctype', () => {
+    const t = htmlToText(`<!DOCTYPE html><div data-json='{"a":"<b>1 > 2</b>"}' class="x">Hello <b>world</b> 3 < 5</div>`);
+    expect(t.text).toBe('Hello world 3 < 5');
+  });
+
   it('falls back to <title> then <h1>; handles numeric entities and hidden elements', () => {
     expect(htmlToText('<html><head><title> Hi &amp; bye </title></head><body>x</body></html>').title).toBe('Hi & bye');
     const t = htmlToText(
