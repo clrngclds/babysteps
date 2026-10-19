@@ -80,6 +80,9 @@ FROM `dc-test2-489503.babysteps.visits` GROUP BY week ORDER BY week DESC;
 The weekly pipeline digest also emails these numbers (see `pipeline/PIPELINE_NOTES.md`, Visibility).
 
 ## Notes
+- Test data: the 13 QA/verification rows dated 2026-10-19 that were inserted before 09:00 UTC (before the
+  link was shared) were deleted on 2026-10-19. Later rows were kept, including one `qa/live.mjs` ping at
+  13:01 UTC (`week_first=true`). Running `qa/live.mjs` against the live URL always adds one real-looking row.
 - The `bq` CLI fails on this workstation (mTLS client-certificate bug), so the script calls the
   BigQuery REST API with curl instead.
 - New exclusions on the `_Default` sink took about 3–4 minutes to take effect.
