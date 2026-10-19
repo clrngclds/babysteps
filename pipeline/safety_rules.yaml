@@ -1,0 +1,456 @@
+# Safety rules for new content (gate G4, SDD §8.4)
+# =================================================
+#
+# Every new activity the pipeline finds is checked against these rules before it can be
+# published. The check is plain word matching, so it is predictable: the same text always
+# gets the same result. A second, AI-based safety review (gate G5) runs after this one.
+#
+# HOW A RULE WORKS
+#   match:        Words or phrases to look for. Matching ignores upper/lower case and finds
+#                 whole words only ("nut" finds "nuts" but not "coconut", "nutmeg" or
+#                 "doughnut"). A simple plural is found too ("grape" finds "grapes",
+#                 "battery" finds "batteries"). Spaces and hyphens are interchangeable.
+#   fields:       Which parts of the activity are searched: title, summary, how_to,
+#                 materials (and for outings: name, summary, notes). The safety note itself is
+#                 not searched for risk words, so a note such as "never use balloons" does not
+#                 cause a block.
+#   action:       block         -> the activity is never published (logged, no action needed).
+#                 require_note  -> the activity is published only if its safety note (or its
+#                                  how-to text) contains one of the words in `require_any`.
+#   require_any:  For require_note rules: the words that count as a proper safety note.
+#   below_month:  Optional. The rule applies only to activities for babies younger than this
+#                 many months (for outings: the youngest age the outing is for).
+#                 Example: honey is blocked only below 12 months.
+#   unless:       Optional. Words that cancel the rule when they appear in the SAME sentence
+#                 as the risk word. Example: "Offer grapes cut into quarters" is fine because
+#                 "quarters" is in the same sentence; "Offer whole grapes" is blocked.
+#                 Each item in the materials list counts as its own sentence.
+#   examples:     Sentences that must be blocked / must be allowed by this rule. They are
+#                 checked automatically by the test suite (each example is put into an
+#                 activity's how-to text), so if you change a rule, add an example that shows
+#                 what you meant. A rule with a broken example fails the tests.
+#   why:          One or two plain sentences on the risk. Shown in the quarantine log.
+#
+# EDITING
+#   - To add a word, add a line under `match:` (or `unless:` / `require_any:`).
+#   - To add a rule, copy an existing one, give it a new unique `id` (lowercase letters,
+#     digits and hyphens) and fill in every field.
+#   - Advanced: an entry starting with "re:" is a regular expression, matched against the text
+#     in lowercase (used below only where two words must appear together, e.g. a pillow AND
+#     sleep). You don't need these for ordinary edits.
+#   - "&name" before a list gives it a name; "*name" elsewhere reuses that same list, so one
+#     edit updates every rule that uses it.
+#   - Changes take effect at the next pipeline run; nothing else needs to be deployed.
+#     A rule file that cannot be read (bad indentation, missing field) stops the run with an
+#     error instead of publishing without safety checks.
+#   - Existing published activities are not re-checked by these rules; they only gate new ones.
+
+version: 1
+
+rules:
+  # ---------------------------------------------------------------------------------------
+  # Choking and swallowing hazards: always blocked for under-3s
+  # ---------------------------------------------------------------------------------------
+  - id: button-batteries
+    title: Button and coin batteries
+    why: A swallowed button battery can burn through a child's throat or gut within two hours.
+    action: block
+    applies_to: [activity]
+    fields: [title, summary, how_to, materials]
+    match: [button battery, coin battery, coin cell, lithium coin, watch battery]
+    examples:
+      blocked:
+        - Make a light-up sensory bottle with a button battery tea light inside.
+      allowed:
+        - Shine a torch on the wall and let them chase the light.
+
+  - id: magnets
+    title: Small magnets
+    why: If a child swallows two magnets (or a magnet and a metal object) they can pinch the gut together and cause serious internal injury.
+    action: block
+    applies_to: [activity]
+    fields: [title, summary, how_to, materials]
+    match: [magnet, magnetic ball, magnetic bead]
+    # "magnetic tiles" and "magnetic blocks" are large construction toys and are not matched.
+    examples:
+      blocked:
+        - Stick fridge magnets to a baking tray and let them pull them off.
+      allowed:
+        - Build a tower with large magnetic tiles.
+
+  - id: balloons
+    title: Balloons
+    why: Uninflated balloons and burst balloon pieces are the leading cause of choking deaths from children's products.
+    action: block
+    applies_to: [activity]
+    fields: [title, summary, how_to, materials]
+    match: [balloon]
+    # Picture books and pictures of balloons are fine.
+    unless: [book, story, read, picture, hot air balloon]
+    examples:
+      blocked:
+        - Bat a balloon back and forth across the room.
+        - "Materials: balloon, tape"
+      allowed:
+        - Read "The Red Balloon" together and point to the colours.
+
+  - id: marbles
+    title: Marbles
+    why: Marbles are the right size and shape to block a small child's airway.
+    action: block
+    applies_to: [activity]
+    fields: [title, summary, how_to, materials]
+    match: [marble, marble run]
+    # Marble as a surface (a marble floor or table), or dough that "marbles" when mixed, is fine.
+    unless: [marble floor, marble table, marble tile, marble countertop, marble surface, it marble, marble effect]
+    examples:
+      blocked:
+        - Roll marbles through a cardboard tube.
+      allowed:
+        - Let them feel the cool marble floor with bare feet.
+
+  - id: coins
+    title: Coins
+    why: Coins are among the objects young children swallow most often, and they can lodge in the throat.
+    action: block
+    applies_to: [activity]
+    fields: [title, summary, how_to, materials]
+    match: [coin]
+    examples:
+      blocked:
+        - Post coins into a piggy bank.
+      allowed:
+        - Post chunky wooden discs through a slot in a box lid.
+
+  - id: popcorn
+    title: Popcorn
+    why: Popcorn and unpopped kernels are a well-known choking hazard for children under 4.
+    action: block
+    applies_to: [activity]
+    fields: [title, summary, how_to, materials]
+    match: [popcorn]
+    examples:
+      blocked:
+        - Thread popcorn onto a string to decorate the tree.
+      allowed:
+        - Make a shaker from a sealed bottle of dried rice.
+
+  - id: whole-nuts
+    title: Whole or chopped nuts and peanuts
+    why: Whole and chopped nuts are hard and slippery and can block the airway. Smooth nut butter spread thinly, or finely ground nuts, are fine.
+    action: block
+    applies_to: [activity]
+    fields: [title, summary, how_to, materials]
+    match: [nut, peanut, almond, cashew, walnut, hazelnut, pecan, pistachio, macadamia]
+    # "coconut", "nutmeg" and "butternut" are not matched (whole words only).
+    unless: [butter, ground, crushed, powder, flour, paste, spread, milk, nut free, bolt]
+    examples:
+      blocked:
+        - Offer a few whole peanuts to practise the pincer grasp.
+        - Sort almonds and cashews into a muffin tin.
+      allowed:
+        - Spread a thin layer of smooth peanut butter on toast fingers.
+        - Twist large wooden nuts onto bolts.
+
+  - id: round-foods
+    title: Whole grapes, cherry tomatoes and hot dogs
+    why: Round or tube-shaped foods can plug a small child's airway. Cutting them lengthwise into halves or quarters removes most of the risk.
+    action: block
+    applies_to: [activity]
+    fields: [title, summary, how_to, materials]
+    match: [grape, cherry tomato, hot dog]
+    # Fine when the same sentence says they are quartered or cut lengthwise.
+    unless: [quarter, quartered, lengthwise, lengthways]
+    examples:
+      blocked:
+        - Offer a bowl of whole grapes for self-feeding.
+        - Count cherry tomatoes into a cup.
+      allowed:
+        - Offer grapes cut into quarters lengthwise.
+        - Serve cherry tomatoes quartered.
+
+  - id: hard-or-sticky-foods
+    title: Hard sweets, gum and marshmallows
+    why: Hard sweets, gum and marshmallows can slip into or stick in the airway and are hard to dislodge.
+    action: block
+    applies_to: [activity]
+    fields: [title, summary, how_to, materials]
+    match: [hard candy, hard sweet, boiled sweet, lollipop, cough drop, chewing gum, bubble gum, marshmallow, jelly bean]
+    examples:
+      blocked:
+        - Build towers from marshmallows and dry spaghetti.
+        - Give them a lollipop to hold while you sing.
+      allowed:
+        - Build towers from soft blocks.
+
+  - id: raw-hard-fruit-veg
+    title: Raw carrot or apple chunks
+    why: Chunks of raw carrot or apple are hard enough to block the airway. Grated, steamed or cooked until soft is fine.
+    action: block
+    applies_to: [activity]
+    fields: [title, summary, how_to, materials]
+    match: [raw carrot, raw apple, carrot stick, carrot chunk, apple chunk, carrot coin]
+    unless: [grated, steamed, cooked, soft, mashed, puree]
+    examples:
+      blocked:
+        - Offer raw carrot sticks to gnaw on.
+      allowed:
+        - Offer carrot sticks steamed until soft.
+
+  - id: small-beads
+    title: Small beads
+    why: Small craft beads are easy to swallow or push into a nose or ear. Large wooden threading beads are fine with supervision.
+    action: block
+    applies_to: [activity]
+    fields: [title, summary, how_to, materials]
+    match: [small bead, seed bead, pony bead, perler bead, hama bead, mini bead, tiny bead]
+    examples:
+      blocked:
+        - Thread pony beads onto a pipe cleaner.
+      allowed:
+        - Thread large wooden beads onto a thick shoelace while you supervise.
+
+  - id: water-beads
+    title: Water beads
+    why: Water beads swell inside the body after being swallowed and can block the gut; regulators have warned against them as toys for young children.
+    action: block
+    applies_to: [activity]
+    fields: [title, summary, how_to, materials]
+    match: [water bead, orbeez, gel bead, jelly bead, hydrogel bead]
+    examples:
+      blocked:
+        - Fill a sensory bin with water beads and scoops.
+      allowed:
+        - Fill a sensory bin with cooked pasta and scoops.
+
+  # ---------------------------------------------------------------------------------------
+  # Food and drink by age
+  # ---------------------------------------------------------------------------------------
+  - id: honey-under-12-months
+    title: Honey before 12 months
+    why: Honey can carry bacteria that cause infant botulism. Babies under 12 months should not have any honey, even cooked.
+    action: block
+    applies_to: [activity]
+    below_month: 12
+    fields: [title, summary, how_to, materials]
+    match: [honey]
+    # Books and songs about bees are fine.
+    unless: [bee, honeybee]
+    examples:
+      blocked:
+        - Dip a teething rusk in honey.
+      allowed:
+        - Read a picture book about busy honey bees.
+
+  - id: cows-milk-under-12-months
+    title: Cow's milk as a drink before 12 months
+    why: Cow's milk should not be a main drink before 12 months; small amounts cooked into food are fine.
+    action: block
+    applies_to: [activity]
+    below_month: 12
+    fields: [title, summary, how_to, materials]
+    match: ["cow's milk", cows milk, cow milk, whole milk]
+    unless: [cooking, baking, porridge, cereal, in food, mixed into, cook]
+    examples:
+      blocked:
+        - Let them practise with an open cup of cow's milk.
+      allowed:
+        - Stir a little whole milk into their porridge.
+
+  # ---------------------------------------------------------------------------------------
+  # Safe sleep
+  # ---------------------------------------------------------------------------------------
+  - id: soft-items-in-sleep
+    title: Pillows, blankets and soft toys in sleep
+    why: Soft items in the sleep space raise the risk of suffocation and sudden infant death; babies under 12 months should sleep on their back on a firm, flat surface with nothing else in the cot.
+    action: block
+    applies_to: [activity]
+    below_month: 12
+    fields: [title, summary, how_to, materials]
+    # Matches only when a soft item and a sleep word are in the same sentence, in either order.
+    # A "wearable blanket" (sleep sack) is safe and is not matched.
+    match:
+      - 're:\b(pillows?|cushions?|(?<!wearable )blankets?|duvets?|quilts?|comforters?|sheepskins?|soft toys?|stuffed (animals?|toys?)|cuddly toys?|plush(ies| toys?)?|teddy|teddies|teddy bears?|loveys?|bumpers?)\b.*\b(sleep|sleeps|sleeping|asleep|nap|naps|napping|naptime|nap time|bedtime|bed time|cot|crib|bassinet|moses basket)\b'
+      - 're:\b(sleep|sleeps|sleeping|asleep|nap|naps|napping|naptime|nap time|bedtime|bed time|cot|crib|bassinet|moses basket)\b.*\b(pillows?|cushions?|(?<!wearable )blankets?|duvets?|quilts?|comforters?|sheepskins?|soft toys?|stuffed (animals?|toys?)|cuddly toys?|plush(ies| toys?)?|teddy|teddies|teddy bears?|loveys?|bumpers?)\b'
+    examples:
+      blocked:
+        - Tuck a soft toy into the cot so they have company at nap time.
+        - At bedtime, prop them on a pillow.
+      allowed:
+        - Zip them into a wearable blanket at bedtime.
+        - Lay a blanket on the floor for tummy time.
+
+  - id: cot-bumpers
+    title: Cot bumpers
+    why: Cot and crib bumpers cause suffocation and entrapment deaths and are banned for sale in some countries.
+    action: block
+    applies_to: [activity]
+    fields: [title, summary, how_to, materials]
+    match: [cot bumper, crib bumper, bumper pad]
+    examples:
+      blocked:
+        - Tie a padded cot bumper around the cot.
+      allowed:
+        - Put a cushion on the floor for them to climb over while you spot them.
+
+  - id: baby-walkers
+    title: Sit-in baby walkers
+    why: Sit-in walkers lead to falls down stairs and burns, and don't help babies learn to walk. Push-along walker toys are different and are fine.
+    action: block
+    applies_to: [activity]
+    fields: [title, summary, how_to, materials]
+    match: [baby walker, infant walker, sit-in walker, seated walker, ride-in walker, walker seat]
+    examples:
+      blocked:
+        - Put them in a baby walker so they can explore the kitchen.
+      allowed:
+        - Let them push a sturdy push walker across the room.
+
+  # ---------------------------------------------------------------------------------------
+  # Cords and strings
+  # ---------------------------------------------------------------------------------------
+  - id: necklaces-and-blind-cords
+    title: Necklaces, teething jewellery and blind cords
+    why: Anything that goes around a baby's neck, and looped curtain or blind cords, can strangle; teething necklaces can also break into choking-size beads.
+    action: block
+    applies_to: [activity]
+    fields: [title, summary, how_to, materials]
+    match: [necklace, teething bracelet, teething jewellery, teething jewelry, anklet, curtain cord, blind cord, window cord, blind pull]
+    examples:
+      blocked:
+        - Let them wear an amber teething necklace while they play.
+        - Make a pasta necklace together.
+      allowed:
+        - Thread large wooden beads onto a short, thick lace while you supervise.
+
+  - id: strings-need-supervision
+    title: Strings, ribbons and cords need supervision
+    why: Long strings and ribbons can wrap around a child's neck or fingers. Activities using them must say an adult supervises (or stays close / within reach).
+    action: require_note
+    applies_to: [activity]
+    fields: [title, summary, how_to, materials]
+    match: [string, ribbon, cord, yarn, rope, shoelace, lace, twine]
+    unless: [string bean, string instrument]
+    require_any: &supervision [supervise, supervised, supervision, supervising, stay close, stay with, stay beside, stay right beside, stay within reach, within arm's reach, never leave, watch closely]
+    examples:
+      blocked:
+        - Tie a ribbon to a toy and let them pull it towards them.
+      allowed:
+        - Tie a short ribbon to a toy and let them pull it towards them; supervise closely and put it away afterwards.
+
+  # ---------------------------------------------------------------------------------------
+  # Water and climbing
+  # ---------------------------------------------------------------------------------------
+  - id: water-needs-supervision
+    title: Water play needs supervision
+    why: Babies and toddlers can drown in a few centimetres of water, silently and within seconds. Every activity with water must say an adult supervises.
+    action: require_note
+    applies_to: [activity]
+    fields: [title, summary, how_to, materials]
+    # Water play, baths and pools. "water" on its own is not matched (a drink of water, or water
+    # in a recipe, is not water play); the last line matches "fill ... with water" in one sentence.
+    match:
+      - water play
+      - water table
+      - water tray
+      - water bin
+      - water tub
+      - water bowl
+      - tub of water
+      - bowl of water
+      - basin of water
+      - bucket of water
+      - tray of water
+      - jug of water
+      - sink of water
+      - pour water
+      - pouring water
+      - shallow water
+      - bath
+      - bathtub
+      - bathtime
+      - bath time
+      - paddling pool
+      - wading pool
+      - swimming
+      - pool
+      - puddle
+      - sprinkler
+      - splash pad
+      - 're:\b(fill|fills|filled|filling)\b.*\bwater\b'
+    unless: [pool noodle]
+    # The design doc (SDD §8.4) names the word "supervise" for water, so other phrasings such as
+    # "stay within arm's reach" are deliberately not enough here.
+    require_any: [supervise, supervised, supervision, supervising]
+    examples:
+      blocked:
+        - Fill a shallow tub with water and float some cups.
+      allowed:
+        - Fill a shallow tub with water and float some cups; supervise the whole time and empty it straight after.
+        - Offer a few sips of water from an open cup at mealtimes.
+
+  - id: climbing-needs-spotting
+    title: Climbing needs an adult spotting
+    why: Falls are the most common cause of injury for toddlers. Climbing activities must say an adult stays close and spots the child.
+    action: require_note
+    applies_to: [activity]
+    fields: [title, summary, how_to, materials]
+    match: [climb, climbing, climbed, climber, climbing frame, pikler, pikler triangle, stairs, staircase]
+    # The design doc (SDD §8.4) names the word "spot" for climbing.
+    require_any: [spot, spotting, spotted, spotter]
+    examples:
+      blocked:
+        - Let them climb up and over a stack of firm cushions.
+      allowed:
+        - Let them climb up and over a stack of firm cushions while you kneel beside them to spot.
+
+  # ---------------------------------------------------------------------------------------
+  # Small objects (treasure baskets, loose parts, sensory bins)
+  # ---------------------------------------------------------------------------------------
+  - id: small-objects-need-supervision
+    title: Small objects need supervision
+    why: Babies and toddlers mouth everything. Activities with small loose objects must say an adult supervises (or stays close / within reach).
+    action: require_note
+    applies_to: [activity]
+    fields: [title, summary, how_to, materials]
+    match: [small object, small item, small toy, small part, loose part, treasure basket, pebble, stone, shell, acorn, conker, bottle cap, bottle top, pom pom, pompom, button sorting, sort button, sorting button, loose button, craft button]
+    unless: [stepping stone]
+    # "*supervision" means: the same list of supervision words as the strings rule above
+    # (marked "&supervision"). Edit it there and every rule using it picks up the change.
+    require_any: *supervision
+    examples:
+      blocked:
+        - Fill a treasure basket with a wooden spoon, a whisk and a pinecone.
+        - Post pom poms into a cardboard tube.
+      allowed:
+        - Fill a treasure basket with a wooden spoon, a whisk and a pinecone; supervise and check every item is larger than a toilet roll tube.
+
+  - id: small-objects-need-size-guidance
+    title: Collections of objects need size guidance
+    why: When a parent gathers objects (a treasure basket, stones, shells), a simple size check keeps choking-size items out. The safety note must say how big items should be, e.g. larger than a toilet roll tube or too big to swallow.
+    action: require_note
+    applies_to: [activity]
+    fields: [title, summary, how_to, materials]
+    match: [small object, small item, small toy, loose part, treasure basket, pebble, stone, shell, acorn, conker, bottle cap, bottle top]
+    unless: [stepping stone]
+    require_any: [larger than, bigger than, too big to, too large to, toilet roll, toilet paper roll, toilet paper tube, choke tube, choke tester, small parts tester, cm across, cm wide]
+    examples:
+      blocked:
+        - Fill a treasure basket with a wooden spoon and a whisk; supervise closely.
+      allowed:
+        - Fill a treasure basket with a wooden spoon and a whisk; supervise and choose items larger than a toilet roll tube.
+        - Collect smooth stones on a walk and sort them by colour; supervise and use stones too big to swallow.
+
+  - id: sensory-fillers-need-supervision
+    title: Dried beans, rice and pasta need supervision
+    why: Dried beans, lentils, uncooked rice and pasta are easy to swallow, inhale or push into a nose or ear.
+    action: require_note
+    applies_to: [activity]
+    fields: [title, summary, how_to, materials]
+    match: [dried bean, dry bean, uncooked pasta, dry pasta, dried pasta, uncooked rice, dry rice, dried rice, coloured rice, colored rice, lentil, chickpea, split pea, corn kernel]
+    require_any: *supervision
+    examples:
+      blocked:
+        - Bury toys in a tray of dried beans for them to find.
+      allowed:
+        - Bury large toys in a tray of dried beans for them to find; supervise closely.
