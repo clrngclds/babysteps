@@ -1,0 +1,9 @@
+# Image build for the content pipeline. Submitted by pipeline/deploy.sh.
+steps:
+  - name: gcr.io/cloud-builders/docker
+    args: ['build', '-f', 'pipeline/Dockerfile', '-t', '${_IMAGE}', '.']
+images:
+  - '${_IMAGE}'
+options:
+  logging: CLOUD_LOGGING_ONLY
+timeout: 1200s
