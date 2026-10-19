@@ -1,4 +1,5 @@
 export type Category = 'gross_motor' | 'fine_motor' | 'language' | 'social_emotional' | 'cognitive' | 'other';
+
 export const CATEGORIES: Category[] = ['gross_motor', 'fine_motor', 'language', 'social_emotional', 'cognitive', 'other'];
 
 export interface Activity {
@@ -47,7 +48,7 @@ export interface Interaction {
   type: InteractionType;
   itemId: string;
   ageMonths: number;
-  /** ms since epoch */
+  /** ms epoch */
   ts: number;
   /** only for save/unsave */
   via?: 'swipe' | 'browse';
