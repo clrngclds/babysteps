@@ -4365,13 +4365,13 @@
     "month": 7,
     "category": "language",
     "philosophy": [
-      "lovevery"
+      "montessori"
     ],
     "milestone_ids": [
       "lang-09-2"
     ],
-    "summary": "Say 'Up?' and hold your arms out for a moment before you pick your baby up, so they learn to signal back.",
-    "how_to": "Before each pick-up, kneel in front of your baby, hold out your arms, and say 'Up?' in a clear, happy voice. Wait a beat to see if they reach or lift their arms, then lift them and say 'Up!' Repeat at every pick-up through the day.",
+    "summary": "Tell your baby you're about to pick them up, hold out your arms, and pause so they can anticipate it and start to answer with their own arms.",
+    "how_to": "Before each pick-up, get down to your baby's level, hold out your arms, and say what's coming: 'Up? I'm going to pick you up now.' Pause for a moment and watch for a reach or lifted arms, then lift them and say what you'll do next, such as 'Now we'll change your diaper.' Use the same words and gesture at every pick-up so the routine becomes predictable.",
     "materials": [
       "none"
     ],
@@ -4388,9 +4388,9 @@
     "duration_min": 2,
     "parent_role": "lead",
     "safety_notes": "",
-    "source_name": "Adaptation (Lovevery-style)",
-    "source_url": null,
-    "verified": false,
+    "source_name": "Goldenrod School (Montessori)",
+    "source_url": "https://www.goldenrodschool.org/post/montessori-principles-respecting-the-child-in-infancy",
+    "verified": true,
     "paid": false
   },
   {
@@ -10286,18 +10286,18 @@
   },
   {
     "id": "act-m17-se-03",
-    "title": "Window watching and pointing",
+    "title": "Window watching: spot and name the birds",
     "month": 17,
     "category": "social_emotional",
     "philosophy": [
-      "lovevery"
+      "montessori"
     ],
     "milestone_ids": [
       "se-18-2",
       "lang-18-1"
     ],
-    "summary": "Sitting at a window, you and your toddler take turns pointing out things outside and naming them.",
-    "how_to": "Sit at a window with a view of a street or yard. Point at something and name it: 'Look, a bus!' Then wait for your toddler to point at something. Name what they show you and add one detail.",
+    "summary": "Watch birds from a window together; point to each one and name it with its real name, then wait for your toddler to point one out to you.",
+    "how_to": "Pick a window that looks onto a yard, tree, or balcony. A simple window bird feeder helps but isn't needed. When a bird lands, point and name it with its real name: 'That's a sparrow.' Pause and let your toddler point to the next bird they spot. Name what they show you and add one detail, like its colour or what it's doing.",
     "materials": [],
     "setting": "indoor",
     "energy": "calm",
@@ -10306,14 +10306,15 @@
       "sound"
     ],
     "play_type": [
-      "social"
+      "social",
+      "nature"
     ],
     "duration_min": 5,
     "parent_role": "alongside",
     "safety_notes": "Keep windows locked or fitted with guards, and don't let your toddler climb onto the sill or furniture beside it.",
-    "source_name": "Adaptation (Lovevery-style)",
-    "source_url": null,
-    "verified": false,
+    "source_name": "The Kavanaugh Report",
+    "source_url": "https://www.thekavanaughreport.com/2021/03/birding-with-young-kids.html",
+    "verified": true,
     "paid": false
   },
   {
@@ -15281,7 +15282,7 @@
     "parent_role": "alongside",
     "safety_notes": "Adult trims stems at this age. Choose non-toxic flowers and an unbreakable or sturdy vase; wipe spills to prevent slips.",
     "source_name": "Bronxville Montessori School",
-    "source_url": "http://www.bronxvillemontessori.com/bmsblog/2019/2/5/flower-arranging-inspiring-montessori-at-home",
+    "source_url": "https://www.bronxvillemontessori.com/bmsblog/2019/2/5/flower-arranging-inspiring-montessori-at-home",
     "verified": true,
     "paid": false
   },
@@ -18983,8 +18984,8 @@
     "milestone_ids": [
       "fm-36-2"
     ],
-    "summary": "Spear soft food cubes with a child-sized fork at snack time.",
-    "how_to": "Cut soft foods like banana, cooked sweet potato, or cheese into bite-size cubes. Show how to hold the fork in a fist and push straight down to spear a piece. Let your child feed themselves the whole snack, even if it is slow.",
+    "summary": "Practise spearing soft food chunks with a child-sized fork at snack time.",
+    "how_to": "Cut soft foods like banana, steamed carrot, or cooked sweet potato into bite-size chunks that are hard to scoop, so your child has to pierce them. Sit with them and model the move slowly: hold the fork, push straight down into a piece, lift it to your mouth. A fist grip is fine at first. If they get frustrated, pre-pierce a couple of pieces for an early win. Let them feed themselves the whole snack, even if it is slow.",
     "materials": [
       "child-sized fork",
       "small plate",
@@ -19002,9 +19003,9 @@
     "duration_min": 15,
     "parent_role": "alongside",
     "safety_notes": "Cut food into small pieces and keep your child seated while eating.",
-    "source_name": "Montessori practical life (adaptation)",
-    "source_url": null,
-    "verified": false,
+    "source_name": "Montessori Generation",
+    "source_url": "https://montessorigeneration.com/blogs/montessori/teaching-children-to-use-fork",
+    "verified": true,
     "paid": false
   },
   {
@@ -19867,8 +19868,8 @@
       "montessori"
     ],
     "milestone_ids": [],
-    "summary": "Walk along a taped line while carrying a small tray with one object on it.",
-    "how_to": "Make a large oval with tape on the floor. Walk it slowly, heel to toe, carrying a small tray with a block or empty cup. Invite your child to follow. Add a bell or a cup with a little water as they get steadier.",
+    "summary": "Walk along a taped oval line while carrying a small tray with one object on it.",
+    "how_to": "Tape a large oval on the floor. First walk it together with ordinary steps, then slowly heel to toe. Once your child can stay on the line, hand them a small tray with a block or empty cup and invite them to carry it around the oval without it falling. As they get steadier, swap in a cup with a little water.",
     "materials": [
       "painter's tape",
       "small tray",
@@ -19887,9 +19888,9 @@
     "duration_min": 10,
     "parent_role": "alongside",
     "safety_notes": "Use unbreakable items and keep the path clear.",
-    "source_name": "Montessori 'walking on the line' (adaptation)",
-    "source_url": null,
-    "verified": false,
+    "source_name": "Montessori School of the Berkshires",
+    "source_url": "https://www.berkshiremontessori.org/msb-blog/walking-on-the-line",
+    "verified": true,
     "paid": false
   },
   {

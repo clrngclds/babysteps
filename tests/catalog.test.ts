@@ -36,9 +36,22 @@ describe('catalog validation', () => {
   });
 
   it('strict mode turns published coverage gaps into errors', () => {
-    const { errors, warnings } = validate(load(), { strictPublishedCoverage: true });
+    // Fixture: leave month 7 language with exactly 2 activities, then mark one unverified,
+    // so the source passes but the published set has a gap.
+    const d = load();
+    const m7lang = d.activities.filter((a) => a.month === 7 && a.category === 'language');
+    d.activities = d.activities.filter((a) => !(a.month === 7 && a.category === 'language')).concat(
+      m7lang.slice(0, 2).map((a, i) => (i === 0 ? { ...a, verified: false } : a)),
+    );
+    const lenient = validate(d);
+    expect(lenient.errors.some((e) => e.startsWith('coverage: month 7 language'))).toBe(false);
+    expect(lenient.warnings.some((w) => w.includes('dropped'))).toBe(true);
+    const { errors } = validate(d, { strictPublishedCoverage: true });
     expect(errors.some((e) => e.startsWith('coverage: month 7 language'))).toBe(true);
-    expect(warnings.some((w) => w.includes('dropped'))).toBe(true);
+  });
+
+  it('real data passes strict published coverage', () => {
+    expect(validate(load(), { strictPublishedCoverage: true }).errors).toEqual([]);
   });
 });
 
@@ -49,7 +62,15 @@ describe('catalog build', () => {
     const acts = built.files['activities.json'] as { verified: boolean }[];
     expect(acts.length).toBe(publishedActivities(load().activities).length);
     expect(acts.every((a) => a.verified)).toBe(true);
-    expect(acts.length).toBe(616);
+  });
+
+  it('drops an activity marked unverified', () => {
+    const d = load();
+    const target = d.activities[0].id;
+    d.activities = d.activities.map((a) => (a.id === target ? { ...a, verified: false } : a));
+    const acts = buildCatalog(d, 3, '2026-10-18T00:00:00Z').files['activities.json'] as { id: string }[];
+    expect(acts.length).toBe(d.activities.length - 1);
+    expect(acts.some((a) => a.id === target)).toBe(false);
   });
 
   it('writes 37 by-month files with current and next checkpoint milestones', () => {
