@@ -75,3 +75,8 @@ FROM `dc-test2-489503.babysteps.visits` GROUP BY month ORDER BY month DESC;
 - New exclusions on the `_Default` sink took about 3–4 minutes to take effect.
 - Local run: `npm run build && npm run precompress && npm run serve` (port 3000). Without
   `CONTENT_BUCKET` the catalog comes from `out/`; `/api/visit` returns 503 without GCP credentials.
+
+## Phase 3: content pipeline
+The automated content pipeline (SDD §8) is deployed separately by `pipeline/deploy.sh` as three Cloud Run Jobs
+(`babysteps-weekly`, `babysteps-daily`, `babysteps-monthly`) that publish through the contract above. See
+`pipeline/PIPELINE_NOTES.md` for resources, IAM, schedules, the AUTO_PUBLISH kill switch and rollback.

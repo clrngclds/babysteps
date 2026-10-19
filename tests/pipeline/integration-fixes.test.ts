@@ -57,3 +57,23 @@ describe('staged files', () => {
     expect(s.update.map((r) => r.id)).toEqual(['sg-x']);
   });
 });
+
+import { applyStaged } from '../../pipeline/src/content/merge';
+
+describe('publish-staged', () => {
+  it('adds staged records (re-numbering taken ids) and applies staged retirements', () => {
+    const read = (f: string) => JSON.parse(readFileSync(join(__dirname, '..', '..', 'data', f), 'utf8'));
+    const c = { activities: read('activities.json'), milestones: ms, outings: read('sg_outings.json') };
+    const taken = { ...c.activities[0], id: c.activities[0].id, title: 'New one', origin: 'pipeline', added_at: '2026-10-19' };
+    const staged: StagedFile = {
+      date: '2026-10-19', run_id: 'r', auto_publish: false, activities: [taken], outings: [], update: [],
+      retire: [{ id: c.outings[0].id, reason: 'event ended' }], validation: { ok: true, errors: [], warnings: 0 },
+    };
+    const next = applyStaged(c, staged);
+    expect(next.activities).toHaveLength(621);
+    const added = next.activities[620];
+    expect(added.id).not.toBe(c.activities[0].id);
+    expect(added.id).toMatch(/^act-m00-gm-\d\d$/);
+    expect(next.outings.find((o: { id: string }) => o.id === c.outings[0].id)!.status).toBe('retired');
+  });
+});

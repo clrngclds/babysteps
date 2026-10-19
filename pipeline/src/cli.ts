@@ -29,7 +29,7 @@ import { publishCatalog, readLatest, rollback, validateForPublish } from './publ
 import { jobFinished, jobStarted, readJobHealth } from './jobs/job-health';
 import { runWeekly } from './jobs/weekly';
 import { runDaily, runMonthly } from './jobs/daily-monthly';
-import { nextActivityId, nextOutingId } from './content/merge';
+import { applyStaged } from './content/merge';
 import type { JobDeps } from './jobs/common';
 import type { StagedFile } from './types';
 
@@ -105,25 +105,7 @@ async function main(argv: string[]) {
       if (!staged) throw new Error(`no staged file for ${date}`);
       const content = await loadContent(bucket);
       if (!content) throw new Error('content/ not seeded');
-      const taken = new Set([...content.activities.map((a) => a.id), ...content.outings.map((o) => o.id)]);
-      const acts = [...content.activities];
-      for (const a of staged.activities) {
-        const id = taken.has(a.id) ? nextActivityId({ ...content, activities: acts }, a.month, a.category, taken) : a.id;
-        taken.add(id);
-        acts.push({ ...a, id });
-      }
-      const outs = [...content.outings];
-      for (const o of staged.outings) {
-        const id = taken.has(o.id) ? nextOutingId(o.type, o.name, taken) : o.id;
-        taken.add(id);
-        outs.push({ ...o, id });
-      }
-      const retire = new Set(staged.retire.map((r) => r.id));
-      const next = {
-        ...content,
-        activities: acts.map((a) => (retire.has(a.id) ? { ...a, status: 'retired' } : a)),
-        outings: outs.map((o) => (retire.has(o.id) ? { ...o, status: 'retired' } : o)),
-      };
+      const next = applyStaged(content, staged);
       const r = await publishCatalog(bucket, next, { now, health: { siteUrl: cfg.siteUrl } });
       if (!r.ok) throw new Error(`publish failed: ${r.errors.join('; ')}`);
       await saveContent(bucket, next);

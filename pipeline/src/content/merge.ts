@@ -2,7 +2,7 @@
  * Turns gate-passing candidates into canonical records and merges them into content (SDD §8.5 step 1).
  * Field order matches data/*.json, with the lifecycle fields at the end.
  */
-import type { Activity, ActivityDraft, Candidate, ContentSet, Outing, OutingDraft } from '../types';
+import type { Activity, ActivityDraft, Candidate, ContentSet, Outing, OutingDraft, StagedFile } from '../types';
 
 const slug = (s: string) =>
   s
@@ -146,4 +146,26 @@ export function retireRecords(content: ContentSet, ids: Set<string>): ContentSet
 /** Pure: applies field patches to outings (date confirmation, last_verified). */
 export function patchOutings(content: ContentSet, patches: Map<string, Partial<Outing>>): ContentSet {
   return { ...content, outings: content.outings.map((o) => (patches.has(o.id) ? { ...o, ...patches.get(o.id) } : o)) };
+}
+
+/**
+ * Pure: applies a staged file (AUTO_PUBLISH=false output) to the current content for a manual
+ * publish. New records keep their staged ids unless taken meanwhile; retirements are applied.
+ * Field updates listed in `update` are not carried in the staged file and recur on the next run.
+ */
+export function applyStaged(content: ContentSet, staged: StagedFile): ContentSet {
+  const taken = new Set([...content.activities.map((a) => a.id), ...content.outings.map((o) => o.id)]);
+  const activities = [...content.activities];
+  for (const a of staged.activities) {
+    const id = taken.has(a.id) ? nextActivityId({ ...content, activities }, a.month, a.category, taken) : a.id;
+    taken.add(id);
+    activities.push({ ...a, id });
+  }
+  const outings = [...content.outings];
+  for (const o of staged.outings) {
+    const id = taken.has(o.id) ? nextOutingId(o.type, o.name, taken) : o.id;
+    taken.add(id);
+    outings.push({ ...o, id });
+  }
+  return retireRecords({ ...content, activities, outings }, new Set(staged.retire.map((r) => r.id)));
 }

@@ -94,7 +94,7 @@ Measured from `out/`, gzip level 9, excluding the `nomodule` polyfills:
 12. **Brand name** is "baby steps", per the brief. The mockup's desktop logo said "littlesteps".
 
 ## Known gaps and TODOs for Phase 2
-- **Content:** fix month 7 language coverage and lang-09-2 linkage (see deviation 2). Switch act-m25-oth-03 to https or a new source. The data has no `added_at`, so the "New" badge (AD-4) and the "New this week" reason never trigger. Backfill when the pipeline lands.
+- **Content:** fix month 7 language coverage and lang-09-2 linkage (see deviation 2). Switch act-m25-oth-03 to https or a new source. Phase 3 backfilled `added_at`/`status`/`origin` (seed records are never "new"); pipeline items get `added_at` = publish date, so "New this week" now works for them.
 - **Outings in recommendations** (SG-4 / §7.6, P1) are not built.
 - **RC-5:** "tried it" feedback is weighted (+2.0 / −0.5) but there's no prompt to rate tried items from For You.
 - **Catalog pruning:** the service worker never deletes old `catalog/v{N}/` entries after a version switch. Add pruning on activate or on switch.
