@@ -111,22 +111,25 @@ upsert_policy() { # upsert_policy JSON  (matched on displayName)
   local filter
   filter=$(jq -rn --arg n "$name" '"display_name=\"" + $n + "\"" | @uri')
   existing=$(api GET "${MON}/alertPolicies?filter=${filter}" | jq -r '.alertPolicies[0].name // empty')
+  local out
   if [[ -n "$existing" ]]; then
-    api PATCH "https://monitoring.googleapis.com/v3/${existing}" "$body" >/dev/null
+    out=$(api PATCH "https://monitoring.googleapis.com/v3/${existing}" "$body"; echo "@@${HTTP_CODE}")
   else
-    api POST "${MON}/alertPolicies" "$body" >/dev/null
+    out=$(api POST "${MON}/alertPolicies" "$body"; echo "@@${HTTP_CODE}")
   fi
-  [[ "$HTTP_CODE" == 200 ]] || { echo "alert policy '${name}' failed (${HTTP_CODE})"; return 1; }
+  HTTP_CODE=${out##*@@}
+  [[ "$HTTP_CODE" == 200 ]] || { echo "alert policy '${name}' failed (${HTTP_CODE}): ${out%@@*}"; return 1; }
   echo "ok: ${name}"
 }
 JOBFILTER='resource.type="cloud_run_job" AND resource.labels.job_name=~"^babysteps-"'
 log_policy() { # log_policy NAME FILTER DOC LABEL_EXTRACTORS_JSON SEVERITY
   jq -n --arg name "$1" --arg filter "$2" --arg doc "$3" --argjson labels "$4" \
     --arg sev "$5" --arg ch "$CHANNEL" '{
-    displayName: $name, combiner: "OR", severity: $sev, enabled: true, notificationChannels: [$ch],
+    displayName: $name, combiner: "OR", enabled: true, notificationChannels: [$ch],
     documentation: { content: $doc, mimeType: "text/markdown", subject: $name },
     conditions: [{ displayName: $name, conditionMatchedLog: { filter: $filter, labelExtractors: $labels } }],
-    alertStrategy: { notificationRateLimit: { period: "300s" }, autoClose: "1800s", notificationPrompts: ["OPENED"] } }'
+    alertStrategy: { notificationRateLimit: { period: "300s" }, autoClose: "1800s", notificationPrompts: ["OPENED"] } }
+    + (if $sev == "" then {} else { severity: $sev } end)'
 }
 
 # Notification texts. ${log.extracted_label.X} is filled in by Cloud Monitoring from the log entry.
@@ -169,7 +172,7 @@ EOF
 
 upsert_policy "$(log_policy "babysteps pipeline: weekly digest" "${JOBFILTER} AND jsonPayload.event=\"weekly_digest\"" "$DOC_DIGEST" \
   '{"week_ending":"EXTRACT(jsonPayload.week_ending)","auto_publish":"EXTRACT(jsonPayload.auto_publish)","published":"EXTRACT(jsonPayload.published)","staged":"EXTRACT(jsonPayload.staged)","retired":"EXTRACT(jsonPayload.retired)","quarantined":"EXTRACT(jsonPayload.quarantined)","failures":"EXTRACT(jsonPayload.failures)","catalog_version":"EXTRACT(jsonPayload.catalog_version)","est_cost_usd":"EXTRACT(jsonPayload.est_cost_usd)","summary":"EXTRACT(jsonPayload.summary)"}' \
-  INFO)"
+  "")"
 upsert_policy "$(log_policy "babysteps pipeline: job failed 2 runs in a row" "${JOBFILTER} AND jsonPayload.event=\"pipeline_job_failed_repeatedly\"" "$DOC_JOBFAIL" \
   '{"job":"EXTRACT(jsonPayload.job)","consecutive":"EXTRACT(jsonPayload.consecutive_failures)","reason":"EXTRACT(jsonPayload.reason)"}' ERROR)"
 upsert_policy "$(log_policy "babysteps pipeline: source failing 3 weeks" "${JOBFILTER} AND jsonPayload.event=\"source_failing\"" "$DOC_SOURCE" \

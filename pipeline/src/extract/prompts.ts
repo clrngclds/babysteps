@@ -46,7 +46,7 @@ RULES
 6. safety_notes: required when relevant (small parts or choking risks, water, climbing, cords or strings, food, sleep). Use the word "supervise" for water, food, strings and small objects, and "spot" for climbing. When the activity uses a collection of small objects (treasure basket, sorting, posting), add size guidance such as "every item larger than a toilet-roll tube". Empty string when nothing applies.
 7. Skip product promotions, sales, gift guides and round-ups with no concrete activity, and any medical, diagnostic or therapy advice. Do not make health or development claims beyond what play practises.
 8. Return at most ${MAX_ACTIVITY_CANDIDATES} candidates, the clearest ones. If the page has no usable activity, return {"candidates": []}.
-9. supporting_quote: 8-40 words copied EXACTLY from the page text (same words, same punctuation, no ellipses, no changes) that show the activity is on the page.
+9. supporting_quote: 8-40 words copied EXACTLY from the page text (same words, same punctuation, no ellipses, no changes) that show the activity is on the page Copy one continuous run from a single line of the page text; never join text from different lines, headings or labels.
 10. source_name = the SOURCE NAME given below; source_url = the PAGE URL given below.
 11. Use British spelling ("practise", "colour") and a warm, plain tone, like the example.
 
@@ -75,7 +75,7 @@ RULES
 1. Write summary, notes and price_note in your own words. Never reuse a run of more than 8 consecutive words from the page; rephrase the organiser's blurb completely instead of trimming it.
 2. Singapore only. Skip anything outside Singapore or online-only.
 3. type: venue (a place you can visit any open day), programme (recurring sessions, e.g. weekly storytime or a course), event (a one-off or dated run).
-4. Age range in months (min_age_months, max_age_months). It must overlap 0-36; skip outings only for older children (e.g. "ages 4-6"). Cap max_age_months at 36. "Babies under 1" = 0-12; "toddlers 1-3" = 12-36; "ages 0-6" = 0-36.
+4. Age range in months (min_age_months, max_age_months). It must overlap 0-36; skip outings only for older children (e.g. "ages 4-6"). Cap max_age_months at 36. "Babies under 1" = 0-12; "toddlers 1-3" = 12-36; "ages 0-6" = 0-36. Use the age the page states. When the page states no age, include the outing only if it is clearly suited to babies or toddlers (playgrounds, gardens, libraries, baby or toddler programmes, family events with toddler activities) and set a realistic min_age_months (e.g. 12 for walking-age play areas). Skip attractions built for older children or adults (thrill rides, waterpark slides, ticket or booking pages, talks or shows with no young-child angle), even when families are welcome.
 5. region from the location: central (e.g. Orchard, city, Marina Bay, Bukit Timah, Queenstown, Toa Payoh, Bishan, Novena, Kallang, Geylang, Marine Parade, Bukit Merah), north (Woodlands, Yishun, Sembawang, Mandai), north-east (Ang Mo Kio, Hougang, Punggol, Sengkang, Serangoon), east (Bedok, Tampines, Pasir Ris, Changi), west (Jurong, Clementi, Bukit Batok, Bukit Panjang, Choa Chu Kang, Tengah). Islandwide or several sites: central.
 6. Dates are ISO YYYY-MM-DD. Use TODAY to resolve a missing year. start_date/end_date are null for venues and open-ended programmes. dates_confirmed = true only when the page states explicit dates for this edition (or the venue/programme has no dates); false when dates are missing, vague ("coming soon", "every school holiday") or from a past edition. An event must have a start_date.
 7. recurrence: short schedule such as "Sat 11am-12pm" or "Fri-Sat 10am-5pm", else null.
@@ -84,7 +84,7 @@ RULES
 10. rain_ok = true only for indoor or fully sheltered outings. setting: indoor | outdoor | either.
 11. summary: one plain sentence saying what the family does there. notes: 1-3 short sentences of practical details (times, registration, what to bring, who it is for).
 12. url = the PAGE URL given below.
-13. supporting_quote: 8-40 words copied EXACTLY from the page text (same words, same punctuation, no ellipses) that show the outing, ideally including its date or age group.
+13. supporting_quote: 8-40 words copied EXACTLY from the page text (same words, same punctuation, no ellipses) that show the outing, ideally including its date or age group Copy one continuous run from a single line of the page text; never join text from different lines, headings or labels (e.g. do not glue a "When:" line to the next line).
 14. At most ${MAX_OUTING_CANDIDATES} candidates; a single event page usually gives exactly 1. If nothing fits, return {"candidates": []}.
 
 ALLOWED VALUES
@@ -136,7 +136,7 @@ export const REVIEW_SYSTEM = `You are a paediatric-safety and early-childhood re
 ${UNTRUSTED}
 
 Score each criterion 1-5:
-- age_appropriate: suits the stated month (activity) or age range (outing): physically and cognitively realistic, neither far too advanced nor far too young.
+- age_appropriate: suits the stated month (activity) or age range (outing): physically and cognitively realistic, neither far too advanced nor far too young. For outings, score 3 or lower when the page does not support the age range and the place is not clearly suited to under-3s (e.g. waterpark slides, thrill rides, talks or shows aimed at older children).
 - safety: no unmanaged hazard for under-3s (choking or small parts, whole grapes, nuts, popcorn, coins, button batteries, magnets, balloons, marbles; honey under 12 months; water without supervision; loose bedding or pillows for sleep; cords or strings; climbing without spotting; unsafe food). Hazards are fine only when safety_notes manage them clearly.
 - no_medical_claims: no diagnosis, treatment, therapy or health promises ("cures colic", "prevents speech delay", "boosts IQ"). Saying what a play practises is fine.
 - not_product_only: real play or a real outing a family can do, not mainly an advert, sale or gift list. Needing one specific toy is acceptable when the play idea is clear.

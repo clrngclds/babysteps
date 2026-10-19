@@ -185,7 +185,8 @@ export function g2Grounding(c: Candidate, page: PageContext): GateFailure[] {
   const fields: [string, unknown][] =
     c.kind === 'activity'
       ? [['title', act(c).title], ['summary', act(c).summary], ['how_to', act(c).how_to]]
-      : [['name', out(c).name], ['summary', out(c).summary]];
+      : // An outing's name is the organiser's official title (a proper noun), so only the summary is checked.
+        [['summary', out(c).summary]];
   for (const [name, v] of fields) {
     const t = tokens(typeof v === 'string' ? v : '');
     for (let i = 0; i + COPY_RUN_WORDS <= t.length; i++) {
