@@ -35,6 +35,11 @@ export interface SourceConfig {
   child_sitemaps?: string[];
   /** Default philosophy tags for activity sources (e.g. ["montessori"]). */
   philosophy?: string[];
+  /**
+   * Sitemap sources: treat a changed <lastmod> as new (default true). Set false where the site
+   * regenerates every lastmod in bulk (e.g. OnePA stamps all URLs daily), so only new URLs count.
+   */
+  track_lastmod?: boolean;
   /** Max items from this source sent to extraction per run (default 15). */
   max_items_per_run?: number;
   /** "weekly" (default) or "monthly" (e.g. festival sites, venue lists). */
@@ -72,6 +77,8 @@ export interface FetchOptions {
   skipRobots?: boolean;
   timeoutMs?: number;
   method?: 'GET' | 'HEAD';
+  /** Body cap for this request (default: the fetcher's maxBytes). Large feeds/sitemaps need more. */
+  maxBytes?: number;
 }
 
 /** Polite HTTP client: full browser UA, robots.txt, 1 request / 2 s per host. */
@@ -136,6 +143,8 @@ export interface DiscoverStats {
   seededOnly: number; // first run: marked seen without processing
   overCap: number; // new but over max_items_per_run
   errors: string[];
+  /** Why the source was not read this run (disabled, monthly source on a weekly run). */
+  skipped?: string;
 }
 
 export interface DiscoverResult {
