@@ -282,6 +282,7 @@ async function handle(req, res) {
     return sendText(res, 400, 'Bad request');
   }
 
+  // /healthz answers inside the container, but run.app reserves it (Cloud Run known issue), so /health is the public probe.
   if (pathname === '/healthz' || pathname === '/health') return sendText(res, 200, 'ok');
   if (pathname === '/api/visit') return handleVisit(req, res);
   if (req.method !== 'GET' && req.method !== 'HEAD') return sendText(res, 405, 'Method not allowed', { allow: 'GET, HEAD' });

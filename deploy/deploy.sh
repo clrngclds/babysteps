@@ -179,4 +179,5 @@ fi
 
 URL=$(gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format 'value(status.url)')
 log "Done: ${URL}"
-curl -fsS "${URL}/healthz" && echo
+# run.app reserves /healthz (Cloud Run known issue: paths ending in "z"), so probe /health.
+curl -fsS "${URL}/health" && echo
