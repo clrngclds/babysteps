@@ -59,7 +59,12 @@ export class GcsBucket implements Bucket {
 
   async read(path: string): Promise<StoredObject | null> {
     const r = await this.call(`${API}/storage/v1/b/${this.name}/o/${encodeURIComponent(path)}?alt=media`);
-    if (r.status === 404) return null;
+    if (r.status === 404) {
+      const body = await r.text();
+      // A missing bucket must not look like a missing object (the job would re-seed into nowhere).
+      if (/bucket does not exist/i.test(body)) throw new Error(`gcs read ${path}: bucket ${this.name} does not exist`);
+      return null;
+    }
     if (!r.ok) throw new Error(`gcs read ${path}: ${r.status} ${await r.text()}`);
     return { body: await r.text(), generation: r.headers.get('x-goog-generation') ?? '' };
   }

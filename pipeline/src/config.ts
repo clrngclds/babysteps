@@ -26,7 +26,8 @@ const bool = (v: string | undefined, dflt: boolean) =>
   v === undefined || v === '' ? dflt : ['1', 'true', 'yes', 'on'].includes(v.toLowerCase());
 
 export function loadConfig(env: NodeJS.ProcessEnv = process.env): PipelineConfig {
-  const project = env.GCP_PROJECT || env.GOOGLE_CLOUD_PROJECT || 'dc-test2-489503';
+  // GCP_PROJECT only: a developer's GOOGLE_CLOUD_PROJECT must not redirect the pipeline to another project.
+  const project = env.GCP_PROJECT || 'dc-test2-489503';
   const model = env.GEMINI_MODEL || 'gemini-2.5-flash';
   return {
     project,
