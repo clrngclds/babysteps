@@ -80,7 +80,30 @@ export async function appendQuarantine(b: Bucket, file: QuarantineFile): Promise
   await writeJson(b, PATHS.quarantine(file.date), merged);
 }
 
-export const saveStaged = (b: Bucket, s: StagedFile) => writeJson(b, PATHS.staged(s.date), s);
+/** Pure: combines two staged files of the same day (weekly + daily both stage on Mondays). */
+export function mergeStaged(prev: StagedFile, next: StagedFile): StagedFile {
+  const byId = <T extends { id: string }>(a: T[], b: T[]) => [...new Map([...a, ...b].map((x) => [x.id, x])).values()];
+  return {
+    date: next.date,
+    run_id: prev.run_id === next.run_id ? next.run_id : `${prev.run_id},${next.run_id}`,
+    auto_publish: false,
+    activities: byId(prev.activities, next.activities),
+    outings: byId(prev.outings, next.outings),
+    retire: byId(prev.retire, next.retire),
+    update: byId(prev.update, next.update),
+    validation: {
+      ok: prev.validation.ok && next.validation.ok,
+      errors: [...prev.validation.errors, ...next.validation.errors],
+      warnings: Math.max(prev.validation.warnings, next.validation.warnings),
+    },
+  };
+}
+
+/** Writes content/staged/{date}.json, merging with a file another job already staged that day. */
+export async function saveStaged(b: Bucket, s: StagedFile): Promise<void> {
+  const prev = await readJson<StagedFile>(b, PATHS.staged(s.date));
+  await writeJson(b, PATHS.staged(s.date), prev ? mergeStaged(prev, s) : s);
+}
 export const saveRun = (b: Bucket, r: RunReport) => writeJson(b, PATHS.run(r.job, r.date), r);
 
 /** Quarantine files from the last `days` days (newest first), for retries and the digest. */

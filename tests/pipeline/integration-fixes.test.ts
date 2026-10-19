@@ -39,3 +39,21 @@ describe('dry-run fixes', () => {
     expect(REVIEW_SYSTEM).toContain('does not support the age range');
   });
 });
+
+import { MemoryBucket, readJson as readJ } from '../../pipeline/src/gcp/storage';
+import { saveStaged, PATHS as P } from '../../pipeline/src/content/store';
+import type { StagedFile } from '../../pipeline/src/types';
+
+describe('staged files', () => {
+  it('a second job on the same day merges into the staged file instead of replacing it', async () => {
+    const b = new MemoryBucket();
+    const base: StagedFile = { date: '2026-10-19', run_id: 'weekly-1', auto_publish: false, activities: [{ id: 'act-a' } as never], outings: [], retire: [], update: [{ id: 'sg-x', reason: 'dates' }], validation: { ok: true, errors: [], warnings: 0 } };
+    await saveStaged(b, base);
+    await saveStaged(b, { ...base, run_id: 'daily-1', activities: [], retire: [{ id: 'sg-old', reason: 'event ended' }], update: [] });
+    const s = (await readJ<StagedFile>(b, P.staged('2026-10-19')))!;
+    expect(s.run_id).toBe('weekly-1,daily-1');
+    expect(s.activities.map((a) => a.id)).toEqual(['act-a']);
+    expect(s.retire.map((r) => r.id)).toEqual(['sg-old']);
+    expect(s.update.map((r) => r.id)).toEqual(['sg-x']);
+  });
+});
