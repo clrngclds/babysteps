@@ -7,6 +7,7 @@
  *   rollback [--to N]      repoint catalog/latest.json at version N (default: the previous version)
  *   publish-staged DATE    publish content/staged/DATE.json after a manual look (works with AUTO_PUBLISH=false)
  *   status                 latest version, content counts, job health, config
+ *   visitors [DATE]        print the digest's visitor numbers for a run on DATE (default today); read-only
  *   validate               run full catalog validation (G9) on content/
  *   seed-content [--force] seed content/ from the image's data/*.json (migrated); never overwrites without --force
  *   migrate-repo           backfill lifecycle fields in the local repo's data/*.json (dev tool)
@@ -18,6 +19,7 @@ import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { loadConfig, sgtToday } from './config';
 import { GcsBucket, readJson } from './gcp/storage';
+import { createBigQuery, queryVisitStats } from './gcp/bigquery';
 import { error, info } from './log';
 import { createFetcher } from './fetch/http';
 import { loadSourcesFile } from './fetch/sources';
@@ -28,6 +30,7 @@ import { migrateActivities, migrateOutings } from './content/migrate';
 import { publishCatalog, readLatest, rollback, validateForPublish } from './publish/publish';
 import { jobFinished, jobStarted, readJobHealth } from './jobs/job-health';
 import { runWeekly } from './jobs/weekly';
+import { visitorFields } from './jobs/digest';
 import { runDaily, runMonthly } from './jobs/daily-monthly';
 import { applyStaged } from './content/merge';
 import type { JobDeps } from './jobs/common';
@@ -38,6 +41,7 @@ const HELP = `usage: pipeline <command>
   rollback [--to N]               repoint catalog/latest.json (default: previous version)
   publish-staged YYYY-MM-DD       publish a staged file
   status | validate               inspect
+  visitors [YYYY-MM-DD]           print the digest visitor numbers (read-only)
   seed-content [--force]          seed content/ from data/*.json
   migrate-repo                    backfill lifecycle fields in local data/*.json`;
 
@@ -72,6 +76,7 @@ async function main(argv: string[]) {
     now,
     runId: process.env.CLOUD_RUN_EXECUTION || `local-${now.toISOString()}`,
     healthFetch: fetch,
+    visitStats: (day: string) => queryVisitStats(createBigQuery({ project: cfg.project, location: cfg.bqLocation }), cfg.visitsTable, day),
   });
 
   switch (cmd) {
@@ -111,6 +116,20 @@ async function main(argv: string[]) {
       await saveContent(bucket, next);
       info(`published staged ${date} as catalog v${r.version}`, { event: 'catalog_published', version: r.version, counts: r.counts });
       return r;
+    }
+    case 'visitors': {
+      const day = argv[1] ?? today;
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(day)) throw new Error('usage: visitors [YYYY-MM-DD]');
+      let stats: Awaited<ReturnType<typeof queryVisitStats>> | Error;
+      try {
+        stats = await deps().visitStats!(day);
+      } catch (e) {
+        stats = e instanceof Error ? e : new Error(String(e));
+      }
+      const out = { day, stats: stats instanceof Error ? { error: stats.message } : stats, digest: visitorFields(stats) };
+      console.log(JSON.stringify(out, null, 2));
+      if (stats instanceof Error) process.exitCode = 1;
+      return out;
     }
     case 'status': {
       const [latest, content, health] = await Promise.all([readLatest(bucket), loadContent(bucket), readJobHealth(bucket)]);

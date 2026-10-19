@@ -96,13 +96,31 @@ api POST "${BQ}/datasets" "{\"datasetReference\":{\"projectId\":\"${PROJECT}\",\
   \"location\":\"${REGION}\",\"description\":\"baby steps anonymous visit counts (SDD 9.1)\"}" >/dev/null
 [[ "$HTTP_CODE" == 200 || "$HTTP_CODE" == 409 ]] || { echo "dataset create failed ($HTTP_CODE)"; exit 1; }
 api POST "${BQ}/datasets/${DATASET}/tables" "{\"tableReference\":{\"projectId\":\"${PROJECT}\",\"datasetId\":\"${DATASET}\",\"tableId\":\"${TABLE}\"},
-  \"description\":\"One row per anonymous visit ping: Singapore date + first-open-today/this-month flags. No IP, UA or ID.\",
+  \"description\":\"One row per anonymous visit ping: Singapore date + first-open-today/this-week/this-month flags. No IP, UA or ID.\",
   \"timePartitioning\":{\"type\":\"DAY\",\"field\":\"date\"},
   \"schema\":{\"fields\":[
     {\"name\":\"date\",\"type\":\"DATE\",\"mode\":\"REQUIRED\",\"description\":\"Visit date in Asia/Singapore\"},
     {\"name\":\"day_first\",\"type\":\"BOOL\",\"mode\":\"REQUIRED\"},
-    {\"name\":\"month_first\",\"type\":\"BOOL\",\"mode\":\"REQUIRED\"}]}}" >/dev/null
+    {\"name\":\"month_first\",\"type\":\"BOOL\",\"mode\":\"REQUIRED\"},
+    {\"name\":\"week_first\",\"type\":\"BOOL\",\"mode\":\"NULLABLE\",\"description\":\"First visit in this ISO week (SGT). NULL from clients older than 2026-10-19\"}]}}" >/dev/null
 [[ "$HTTP_CODE" == 200 || "$HTTP_CODE" == 409 ]] || { echo "table create failed ($HTTP_CODE)"; exit 1; }
+# Tables created before week_first existed: add the column in place (schema update, no recreate).
+# This runs before the service deploy, so the new server never inserts into a table without it.
+ensure_week_first() {
+  local t etag body
+  t=$(api GET "${BQ}/datasets/${DATASET}/tables/${TABLE}")
+  [[ "$HTTP_CODE" == 200 ]] || { echo "table read failed ($HTTP_CODE)"; return 1; }
+  if jq -e '.schema.fields[] | select(.name == "week_first")' <<<"$t" >/dev/null; then
+    echo "column week_first exists"; return 0
+  fi
+  etag=$(jq -r .etag <<<"$t")
+  body=$(jq -c '{schema: {fields: (.schema.fields + [{name: "week_first", type: "BOOL", mode: "NULLABLE",
+    description: "First visit in this ISO week (SGT). NULL from clients older than 2026-10-19"}])}}' <<<"$t")
+  HTTP_CODE=$(curl -sS -o /dev/null -w '%{http_code}' -X PATCH -H "Authorization: Bearer $(token)" -H 'content-type: application/json' \
+    -H "If-Match: ${etag}" "${BQ}/datasets/${DATASET}/tables/${TABLE}" -d "$body")
+  [[ "$HTTP_CODE" == 200 ]] && echo "column week_first added"
+}
+retry 3 ensure_week_first
 
 log "IAM: ${WEB_SA}"
 retry 5 gcloud storage buckets add-iam-policy-binding "gs://${CONTENT_BUCKET}" \

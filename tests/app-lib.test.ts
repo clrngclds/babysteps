@@ -5,7 +5,7 @@ import { buildIndex, stem } from '../src/lib/search';
 import { filterOutings, isPast, isThisWeekend, weekendRange, dateLabel } from '../src/lib/outings';
 import { activeFilterCount, DEFAULT_FILTERS, filterActivities, matchesFilters } from '../src/lib/filters';
 import { addSave, addSwipe, addTried, emptyState, type DeviceState, lastTried, normalizeState, removeSave, swipeCount, MAX_INTERACTIONS } from '../src/lib/state';
-import { computePing, visitPing } from '../src/lib/analytics';
+import { computePing, isoWeek, visitPing } from '../src/lib/analytics';
 import type { Activity, MilestonesFile, Outing } from '../src/lib/types';
 
 const root = join(__dirname, '..');
@@ -148,23 +148,82 @@ describe('device state', () => {
 });
 
 describe('visitPing', () => {
-  it('computes day_first/month_first', () => {
-    expect(computePing(null, '2026-10-19')).toEqual({ day_first: true, month_first: true });
-    expect(computePing('2026-10-18', '2026-10-19')).toEqual({ day_first: true, month_first: false });
-    expect(computePing('2026-09-30', '2026-10-01')).toEqual({ day_first: true, month_first: true });
+  it('computes day_first/month_first/week_first', () => {
+    // 2026-10-19 is a Monday
+    expect(computePing(null, '2026-10-19')).toEqual({ day_first: true, month_first: true, week_first: true });
+    expect(computePing('2026-10-18', '2026-10-19')).toEqual({ day_first: true, month_first: false, week_first: true });
+    expect(computePing('2026-10-19', '2026-10-20')).toEqual({ day_first: true, month_first: false, week_first: false });
+    expect(computePing('2026-10-19', '2026-10-25')).toEqual({ day_first: true, month_first: false, week_first: false });
+    expect(computePing('2026-10-12', '2026-10-20')).toEqual({ day_first: true, month_first: false, week_first: true });
+    expect(computePing('2026-09-30', '2026-10-01')).toEqual({ day_first: true, month_first: true, week_first: false });
     expect(computePing('2026-10-19', '2026-10-19')).toBeNull();
+  });
+  it('week_first follows ISO weeks across years', () => {
+    // Mon 2026-12-28 .. Sun 2027-01-03 is 2026-W53; Mon 2027-01-04 starts 2027-W01
+    expect(computePing('2026-12-28', '2027-01-03')).toEqual({ day_first: true, month_first: true, week_first: false });
+    expect(computePing('2027-01-03', '2027-01-04')).toEqual({ day_first: true, month_first: false, week_first: true });
+    // same week number, different year
+    expect(computePing('2025-10-20', '2026-10-19')!.week_first).toBe(true);
+  });
+  it('isoWeek', () => {
+    expect(isoWeek('2026-10-19')).toBe('2026-W43');
+    expect(isoWeek('2026-10-25')).toBe('2026-W43');
+    expect(isoWeek('2026-10-26')).toBe('2026-W44');
+    expect(isoWeek('2026-01-01')).toBe('2026-W01'); // Thursday
+    expect(isoWeek('2027-01-01')).toBe('2026-W53'); // Friday
+    expect(isoWeek('2027-01-04')).toBe('2027-W01');
+    expect(isoWeek('2024-12-30')).toBe('2025-W01'); // Monday
+    expect(isoWeek('2021-01-03')).toBe('2020-W53'); // Sunday
   });
   it('is disabled when the URL is unset', async () => {
     const f = vi.fn();
     expect(await visitPing({ url: undefined, lastPing: null, savePing: () => {}, fetchFn: f as unknown as typeof fetch })).toBeNull();
     expect(f).not.toHaveBeenCalled();
   });
-  it('posts only the two flags when enabled', async () => {
+  it('posts only the three flags when enabled', async () => {
     const f = vi.fn().mockResolvedValue({ ok: true });
     const save = vi.fn();
     const sent = await visitPing({ url: 'https://example.test/v', lastPing: '2026-10-18', savePing: save, fetchFn: f as unknown as typeof fetch, now: new Date('2026-10-19T04:00:00Z') });
-    expect(sent).toEqual({ day_first: true, month_first: false });
-    expect(JSON.parse(f.mock.calls[0][1].body)).toEqual({ day_first: true, month_first: false });
+    expect(sent).toEqual({ day_first: true, month_first: false, week_first: true });
+    const body = JSON.parse(f.mock.calls[0][1].body);
+    expect(body).toEqual({ day_first: true, month_first: false, week_first: true });
+    expect(Object.keys(body)).toEqual(['day_first', 'month_first', 'week_first']);
+    expect(f.mock.calls[0][1].credentials).toBe('omit');
     expect(save).toHaveBeenCalledWith('2026-10-19');
+  });
+  it('uses the Singapore date for the week boundary', async () => {
+    // Sun 2026-10-25 16:30 UTC is already Mon 2026-10-26 00:30 in Singapore: a new ISO week.
+    const f = vi.fn().mockResolvedValue({ ok: true });
+    const save = vi.fn();
+    const sent = await visitPing({ url: 'https://example.test/v', lastPing: '2026-10-25', savePing: save, fetchFn: f as unknown as typeof fetch, now: new Date('2026-10-25T16:30:00Z') });
+    expect(sent).toEqual({ day_first: true, month_first: false, week_first: true });
+    expect(save).toHaveBeenCalledWith('2026-10-26');
+  });
+  it('sends at most one ping a day', async () => {
+    const f = vi.fn().mockResolvedValue({ ok: true });
+    let last: string | null = null;
+    const now = new Date('2026-10-19T04:00:00Z');
+    for (let i = 0; i < 3; i++) await visitPing({ url: 'https://example.test/v', lastPing: last, savePing: (d) => { last = d; }, fetchFn: f as unknown as typeof fetch, now });
+    expect(f).toHaveBeenCalledTimes(1);
+  });
+  it('sends nothing and keeps the date when fetch throws', async () => {
+    const f = vi.fn().mockRejectedValue(new Error('offline'));
+    const save = vi.fn();
+    expect(await visitPing({ url: 'https://example.test/v', lastPing: '2026-10-18', savePing: save, fetchFn: f as unknown as typeof fetch, now: new Date('2026-10-19T04:00:00Z') })).toBeNull();
+    expect(save).not.toHaveBeenCalled();
+  });
+});
+
+describe('normalizeState: lastPing', () => {
+  it('keeps a valid date and drops malformed ones', () => {
+    expect(normalizeState({ lastPing: '2026-10-18' }, '2026-10-19').lastPing).toBe('2026-10-18');
+    for (const bad of ['2026-10', '18/10/2026', 'yesterday', 20261018, true, {}, '2026-13-45'])
+      expect(normalizeState({ lastPing: bad }, '2026-10-19').lastPing).toBeNull();
+    expect(normalizeState({}, '2026-10-19').lastPing).toBeNull();
+    expect(normalizeState(null, '2026-10-19').lastPing).toBeNull();
+  });
+  it('an existing record keeps counting weeks from its stored date (no reset on upgrade)', () => {
+    const s = normalizeState({ birth: '2025-06', lastPing: '2026-10-19' }, '2026-10-20');
+    expect(computePing(s.lastPing, '2026-10-20')).toEqual({ day_first: true, month_first: false, week_first: false });
   });
 });

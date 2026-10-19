@@ -3,6 +3,7 @@ import { buildCatalog } from '../../../scripts/catalog-lib';
 import type { PipelineConfig } from '../config';
 import { estimateCost } from '../config';
 import type { Bucket } from '../gcp/storage';
+import type { VisitStats } from '../gcp/bigquery';
 import { readJson } from '../gcp/storage';
 import { info, warn } from '../log';
 import { mergeCandidates, patchOutings, retireRecords } from '../content/merge';
@@ -37,6 +38,8 @@ export interface JobDeps {
   runId: string;
   /** fetch used for the post-publish health check (tests inject a stub). null = skip the check. */
   healthFetch: typeof fetch | null;
+  /** Visitor numbers for the weekly digest (BigQuery). Unset = the digest says "not configured". */
+  visitStats?: (today: string) => Promise<VisitStats>;
 }
 
 export function newReport(job: RunReport['job'], deps: JobDeps, today: string): RunReport {

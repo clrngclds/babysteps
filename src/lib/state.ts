@@ -18,7 +18,7 @@ export interface DeviceState {
   milestonesSeen: string[];
   tagAffinity: Record<string, number>;
   filters: Filters;
-  /** last visit-ping date (SG, YYYY-MM-DD) */
+  /** last visit-ping date (SG, YYYY-MM-DD). day_first, month_first and week_first are all derived from it. */
   lastPing: string | null;
   /** number of app sessions, for the add-to-home-screen prompt */
   visits: number;
@@ -53,7 +53,13 @@ export function normalizeState(raw: unknown, today: string): DeviceState {
     interactions: Array.isArray(r.interactions) ? r.interactions : [],
     favorites: Array.isArray(r.favorites) ? r.favorites : [],
     milestonesSeen: Array.isArray(r.milestonesSeen) ? r.milestonesSeen : [],
+    // A malformed date would break the day/week/month comparison; treat it as "never pinged".
+    lastPing: isIsoDate(r.lastPing) ? r.lastPing : null,
   };
+}
+
+function isIsoDate(v: unknown): v is string {
+  return typeof v === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(v) && !Number.isNaN(Date.parse(`${v}T00:00:00Z`));
 }
 
 function push(s: DeviceState, ...items: Interaction[]): Interaction[] {

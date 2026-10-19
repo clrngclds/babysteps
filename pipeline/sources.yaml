@@ -139,7 +139,13 @@ sources:
     child_sitemaps: ['/post-sitemap\d*\.xml']
     philosophy: [montessori]
     max_items_per_run: 10
+    # Disabled 2026-10-19: the site returns HTTP 403 to requests from Cloud Run (it works from a
+    # desktop IP), so every weekly run would log an error and the source-failing alert would fire
+    # after 3 weeks. Re-enable if it stops blocking Cloud Run.
+    enabled: false
     notes: >-
+      Disabled 2026-10-19: returns 403 to Cloud Run (blocks Google Cloud IPs; works from a desktop
+      IP), which would fire the 3-week source-failing alert.
       2026-10-19: sitemap index 200 (Yoast, listed in robots.txt); post-sitemap.xml 200 with 179
       URLs, 21 changed in the last 90 days, newest 2026-10-14. Some posts are company news and yield
       no activity. robots.txt disallows /feed/, so the sitemap is the only option.

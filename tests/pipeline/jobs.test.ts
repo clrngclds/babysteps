@@ -276,3 +276,67 @@ describe('maintenance helpers', () => {
     expect(urls).not.toContain('https://x/shop/sale');
   });
 });
+
+describe('weekly job: visitor numbers and disabled sources (follow-ups 2026-10-19)', () => {
+  const stats = {
+    current: { start: '2026-10-19', end: '2026-10-25', visitors: 14, visitor_days: 31, legacy_rows: 3 },
+    previous: { start: '2026-10-12', end: '2026-10-18', visitors: 0, visitor_days: 0, legacy_rows: 0 },
+    month: { start: '2026-10-01', end: '2026-10-26', visitors: 20 },
+    week_first_since: '2026-10-19',
+  };
+  const digestOf = (log: { mock: { calls: unknown[][] } }) =>
+    JSON.parse(log.mock.calls.map((c) => String(c[0])).find((l) => l.includes('"weekly_digest"'))!);
+
+  it('puts the visitor numbers in the digest log entry', async () => {
+    const b = await liveBucket();
+    const seen: string[] = [];
+    const log = vi.spyOn(console, 'log');
+    setQuiet(false);
+    await runWeekly(deps(b, { visitStats: async (day) => (seen.push(day), stats) }), TODAY);
+    setQuiet(true);
+    const d = digestOf(log);
+    log.mockRestore();
+    expect(seen).toEqual([TODAY]);
+    expect(d).toMatchObject({ visitors_7d: 14, visitor_days_7d: 31, visitors_prev_7d: 0, visitor_days_prev_7d: 0, visitors_month: 20, visitors_complete: false });
+    expect(d.visitors_past_text).toContain('14 visitors');
+    expect(d.visitors_past_text).toContain('31 visitor-days');
+    expect(d.visitors_month_text).toContain('20 visitors');
+  });
+
+  it('a failed visitor query does not fail the job; the digest says why', async () => {
+    const b = await liveBucket();
+    const log = vi.spyOn(console, 'log');
+    setQuiet(false);
+    const r = await runWeekly(deps(b, { visitStats: async () => { throw new Error('bigquery query 403: Access Denied'); } }), TODAY);
+    setQuiet(true);
+    const d = digestOf(log);
+    log.mockRestore();
+    expect(r.staged).toHaveLength(1);
+    expect(d.visitors_7d).toBeNull();
+    expect(d.visitors_past_text).toContain('Visitor counts unavailable (bigquery query 403');
+    expect(d.summary).toContain('visitor counts: bigquery query 403');
+  });
+
+  it('a disabled source is not fetched and never counts towards source_failing', async () => {
+    const b = await liveBucket();
+    const blocked = 'https://blocked.example.au/sitemap_index.xml';
+    const calls: string[] = [];
+    const web = fakeWeb({ [blocked]: { status: 403, ok: false } });
+    const fetcher: Fetcher = { get: (url, o) => (calls.push(url), web.get(url, o)) };
+    const withDisabled: SourcesFile = {
+      ...sources,
+      sources: [...sources.sources, { id: 'blocked', name: 'Blocked', tier: 1, kind: 'activity', detection: 'sitemap', urls: [blocked], domains: ['blocked.example.au'], enabled: false, notes: 'Disabled: 403 to Cloud Run' }],
+    };
+    await writeJson(b, PATHS.sourceHealth, { blocked: { error_weeks: 2, last_error: '403', last_run: '2026-10-19' } });
+    const warn = vi.spyOn(console, 'error');
+    setQuiet(false);
+    const r = await runWeekly(deps(b, { fetcher, sources: withDisabled }), TODAY);
+    setQuiet(true);
+    const failing = warn.mock.calls.map((c) => String(c[0])).filter((l) => l.includes('"source_failing"'));
+    warn.mockRestore();
+    expect(calls.some((u) => u.includes('blocked.example.au'))).toBe(false);
+    expect(r.discovered.map((s) => s.sourceId)).not.toContain('blocked');
+    expect(failing).toEqual([]);
+    expect((await readJson<Record<string, { error_weeks: number }>>(b, PATHS.sourceHealth))!.blocked.error_weeks).toBe(2);
+  });
+});

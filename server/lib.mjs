@@ -77,8 +77,19 @@ export function resolveStatic(urlPath, has) {
   return null;
 }
 
-/** Strict validation for POST /api/visit: exactly {day_first: boolean, month_first: boolean}. */
-export function validateVisit(raw) {
+/**
+ * Last Singapore date (inclusive) on which the old 2-field body {day_first, month_first} is still
+ * accepted. Clients cached by the service worker before week_first was added (deployed 2026-10-19)
+ * keep sending it for a while; after this date it is rejected like any other body.
+ */
+export const LEGACY_VISIT_BODY_UNTIL = '2026-11-02';
+
+/**
+ * Strict validation for POST /api/visit. Accepts exactly {day_first, month_first, week_first}, all
+ * booleans, or (until LEGACY_VISIT_BODY_UNTIL) exactly {day_first, month_first}. Anything else -> null.
+ * The legacy form returns no week_first, so the row stores NULL for it.
+ */
+export function validateVisit(raw, { today = sgDate(), legacyUntil = LEGACY_VISIT_BODY_UNTIL } = {}) {
   let v;
   try {
     v = JSON.parse(raw);
@@ -86,10 +97,23 @@ export function validateVisit(raw) {
     return null;
   }
   if (v === null || typeof v !== 'object' || Array.isArray(v)) return null;
-  const keys = Object.keys(v).sort();
-  if (keys.length !== 2 || keys[0] !== 'day_first' || keys[1] !== 'month_first') return null;
-  if (typeof v.day_first !== 'boolean' || typeof v.month_first !== 'boolean') return null;
-  return { day_first: v.day_first, month_first: v.month_first };
+  const keys = Object.keys(v).sort().join(',');
+  if (keys === 'day_first,month_first,week_first') {
+    if (typeof v.day_first !== 'boolean' || typeof v.month_first !== 'boolean' || typeof v.week_first !== 'boolean') return null;
+    return { day_first: v.day_first, month_first: v.month_first, week_first: v.week_first };
+  }
+  if (keys === 'day_first,month_first' && today <= legacyUntil) {
+    if (typeof v.day_first !== 'boolean' || typeof v.month_first !== 'boolean') return null;
+    return { day_first: v.day_first, month_first: v.month_first };
+  }
+  return null;
+}
+
+/** The BigQuery row for a validated visit: Singapore date + the flags. Nothing else. */
+export function visitRow(v, date) {
+  const row = { date, day_first: v.day_first, month_first: v.month_first };
+  if (typeof v.week_first === 'boolean') row.week_first = v.week_first;
+  return row;
 }
 
 /** Calendar date in Asia/Singapore as YYYY-MM-DD. */

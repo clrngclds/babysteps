@@ -8,7 +8,7 @@ import { fileURLToPath } from 'node:url';
 import zlib from 'node:zlib';
 import {
   cacheControl, contentType, csp, etagOf, inlineScriptHashes, isCatalogPath, isCompressible,
-  MIN_COMPRESS_BYTES, pickEncoding, resolveStatic, SECURITY_HEADERS, sgDate, validateVisit,
+  MIN_COMPRESS_BYTES, pickEncoding, resolveStatic, SECURITY_HEADERS, sgDate, validateVisit, visitRow,
 } from './lib.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
@@ -258,11 +258,12 @@ async function handleVisit(req, res) {
   } catch (e) {
     return sendText(res, e.status || 400, 'Bad request', { connection: 'close' });
   }
-  const v = validateVisit(raw);
+  const today = sgDate();
+  const v = validateVisit(raw, { today });
   if (!v) return sendText(res, 400, 'Bad request');
-  // One row: Singapore date + the two flags. No IP, user agent, ID or anything else.
+  // One row: Singapore date + the flags (week_first NULL for the legacy body). No IP, user agent, ID or anything else.
   try {
-    await insertVisit({ date: sgDate(), day_first: v.day_first, month_first: v.month_first });
+    await insertVisit(visitRow(v, today));
   } catch (e) {
     log('ERROR', 'visit insert failed', { error: String(e.message || e) });
     return sendText(res, 503, 'Unavailable');

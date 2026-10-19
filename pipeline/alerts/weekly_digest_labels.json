@@ -1,0 +1,15 @@
+{
+  "week_ending": "EXTRACT(jsonPayload.week_ending)",
+  "auto_publish": "EXTRACT(jsonPayload.auto_publish)",
+  "published": "EXTRACT(jsonPayload.published)",
+  "staged": "EXTRACT(jsonPayload.staged)",
+  "retired": "EXTRACT(jsonPayload.retired)",
+  "quarantined": "EXTRACT(jsonPayload.quarantined)",
+  "failures": "EXTRACT(jsonPayload.failures)",
+  "catalog_version": "EXTRACT(jsonPayload.catalog_version)",
+  "est_cost_usd": "EXTRACT(jsonPayload.est_cost_usd)",
+  "summary": "EXTRACT(jsonPayload.summary)",
+  "visitors_past": "EXTRACT(jsonPayload.visitors_past_text)",
+  "visitors_prev": "EXTRACT(jsonPayload.visitors_prev_text)",
+  "visitors_month": "EXTRACT(jsonPayload.visitors_month_text)"
+}

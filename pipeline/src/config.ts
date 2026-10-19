@@ -20,6 +20,10 @@ export interface PipelineConfig {
   firstRunWindowDays: number;
   /** Per-host politeness delay. */
   hostDelayMs: number;
+  /** Anonymous visit counts for the digest, `project.dataset.table` (SDD §9.1). */
+  visitsTable: string;
+  /** BigQuery location of the visits dataset. */
+  bqLocation: string;
 }
 
 const bool = (v: string | undefined, dflt: boolean) =>
@@ -41,6 +45,8 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): PipelineConfig
     today: env.PIPELINE_TODAY || undefined,
     firstRunWindowDays: Number(env.FIRST_RUN_WINDOW_DAYS ?? 30),
     hostDelayMs: Number(env.HOST_DELAY_MS ?? 2000),
+    visitsTable: env.VISITS_TABLE || `${project}.babysteps.visits`,
+    bqLocation: env.BQ_LOCATION || 'asia-southeast1',
   };
 }
 

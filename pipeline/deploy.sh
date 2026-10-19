@@ -57,10 +57,28 @@ ensure_sa "$SCHED_SA" "baby steps scheduler (starts pipeline jobs)"
 log "IAM: ${PIPE_SA} (least privilege)"
 retry 5 gcloud storage buckets add-iam-policy-binding "gs://${CONTENT_BUCKET}" \
   --member "serviceAccount:${PIPE_SA}" --role roles/storage.objectAdmin >/dev/null
-for role in roles/aiplatform.user roles/logging.logWriter; do
+# bigquery.jobUser: run the digest's read-only visitor query (SDD §9.1).
+for role in roles/aiplatform.user roles/logging.logWriter roles/bigquery.jobUser; do
   retry 5 gcloud projects add-iam-policy-binding "$PROJECT" --member "serviceAccount:${PIPE_SA}" \
     --role "$role" --condition=None >/dev/null
 done
+# Dataset-level roles/bigquery.dataViewer on the visit counts (READER is the legacy name the API returns).
+BQ="https://bigquery.googleapis.com/bigquery/v2/projects/${PROJECT}"
+VISITS_DATASET="${VISITS_DATASET:-babysteps}"
+grant_dataset_reader() {
+  local ds etag body
+  ds=$(api GET "${BQ}/datasets/${VISITS_DATASET}")
+  [[ "$HTTP_CODE" == 200 ]] || { echo "dataset ${VISITS_DATASET} read failed (${HTTP_CODE})"; return 1; }
+  if jq -e --arg sa "$PIPE_SA" '.access[] | select(.userByEmail == $sa and (.role == "READER" or .role == "roles/bigquery.dataViewer"))' <<<"$ds" >/dev/null; then
+    echo "dataset ${VISITS_DATASET}: dataViewer grant exists"; return 0
+  fi
+  etag=$(jq -r .etag <<<"$ds")
+  body=$(jq -c --arg sa "$PIPE_SA" '{access: (.access + [{role: "READER", userByEmail: $sa}])}' <<<"$ds")
+  HTTP_CODE=$(curl -sS -o /dev/null -w '%{http_code}' -X PATCH -H "Authorization: Bearer $(token)" -H 'content-type: application/json' \
+    -H "If-Match: ${etag}" "${BQ}/datasets/${VISITS_DATASET}" -d "$body")
+  [[ "$HTTP_CODE" == 200 ]] && echo "dataset ${VISITS_DATASET}: dataViewer granted"
+}
+retry 5 grant_dataset_reader
 
 if [[ -z "${IMAGE:-}" ]]; then
   TAG="$(git -C "$ROOT" rev-parse --short HEAD 2>/dev/null || echo nogit)-$(date -u +%Y%m%d%H%M%S)"
@@ -133,23 +151,9 @@ log_policy() { # log_policy NAME FILTER DOC LABEL_EXTRACTORS_JSON SEVERITY
 }
 
 # Notification texts. ${log.extracted_label.X} is filled in by Cloud Monitoring from the log entry.
-read -r -d '' DOC_DIGEST <<'EOF' || true
-Weekly content digest (informational, no action needed).
-
-- Week ending: ${log.extracted_label.week_ending}
-- AUTO_PUBLISH: ${log.extracted_label.auto_publish}
-- Published: ${log.extracted_label.published}
-- Staged (not live): ${log.extracted_label.staged}
-- Retired: ${log.extracted_label.retired}
-- Quarantined: ${log.extracted_label.quarantined}
-- Failures: ${log.extracted_label.failures}
-- Catalog version: v${log.extracted_label.catalog_version}
-- Gemini cost this week (USD): ${log.extracted_label.est_cost_usd}
-
-${log.extracted_label.summary}
-
-Details in the content bucket: state/runs/, content/staged/, content/quarantine/.
-EOF
+# Digest email text and its label extractors: pipeline/alerts/ (tests/pipeline check they match the log entry).
+DOC_DIGEST=$(cat "$ROOT/pipeline/alerts/weekly_digest.md")
+DIGEST_LABELS=$(jq -c . "$ROOT/pipeline/alerts/weekly_digest_labels.json")
 read -r -d '' DOC_JOBFAIL <<'EOF' || true
 The ${log.extracted_label.job} pipeline job has failed ${log.extracted_label.consecutive} runs in a row.
 
@@ -171,7 +175,7 @@ Check the job logs.
 EOF
 
 upsert_policy "$(log_policy "babysteps pipeline: weekly digest" "${JOBFILTER} AND jsonPayload.event=\"weekly_digest\"" "$DOC_DIGEST" \
-  '{"week_ending":"EXTRACT(jsonPayload.week_ending)","auto_publish":"EXTRACT(jsonPayload.auto_publish)","published":"EXTRACT(jsonPayload.published)","staged":"EXTRACT(jsonPayload.staged)","retired":"EXTRACT(jsonPayload.retired)","quarantined":"EXTRACT(jsonPayload.quarantined)","failures":"EXTRACT(jsonPayload.failures)","catalog_version":"EXTRACT(jsonPayload.catalog_version)","est_cost_usd":"EXTRACT(jsonPayload.est_cost_usd)","summary":"EXTRACT(jsonPayload.summary)"}' \
+  "$DIGEST_LABELS" \
   "")"
 upsert_policy "$(log_policy "babysteps pipeline: job failed 2 runs in a row" "${JOBFILTER} AND jsonPayload.event=\"pipeline_job_failed_repeatedly\"" "$DOC_JOBFAIL" \
   '{"job":"EXTRACT(jsonPayload.job)","consecutive":"EXTRACT(jsonPayload.consecutive_failures)","reason":"EXTRACT(jsonPayload.reason)"}' ERROR)"

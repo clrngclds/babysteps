@@ -1,23 +1,66 @@
 import { describe, expect, it } from 'vitest';
 import {
   cacheControl, contentType, csp, inlineScriptHashes, isCatalogPath, pickEncoding, resolveStatic, sgDate, validateVisit,
+  LEGACY_VISIT_BODY_UNTIL, visitRow,
 } from '../server/lib.mjs';
 
 describe('validateVisit', () => {
-  it('accepts exactly the two boolean flags', () => {
-    expect(validateVisit('{"day_first":true,"month_first":false}')).toEqual({ day_first: true, month_first: false });
-    expect(validateVisit('{"month_first":true,"day_first":true}')).toEqual({ day_first: true, month_first: true });
+  const during = { today: '2026-10-19' };
+  const after = { today: '2026-11-03' };
+  it('accepts exactly the three boolean flags', () => {
+    expect(validateVisit('{"day_first":true,"month_first":false,"week_first":true}', during)).toEqual({ day_first: true, month_first: false, week_first: true });
+    expect(validateVisit('{"week_first":false,"month_first":true,"day_first":true}', during)).toEqual({ day_first: true, month_first: true, week_first: false });
+    expect(validateVisit('{"day_first":true,"month_first":false,"week_first":true}', after)).toEqual({ day_first: true, month_first: false, week_first: true });
+    expect(validateVisit('{"day_first":true,"month_first":false,"week_first":true}')).toEqual({ day_first: true, month_first: false, week_first: true });
+  });
+  it('accepts the old two-flag body for cached clients until the cutoff', () => {
+    expect(LEGACY_VISIT_BODY_UNTIL).toBe('2026-11-02'); // 2 weeks after the 2026-10-19 deploy
+    expect(validateVisit('{"day_first":true,"month_first":false}', during)).toEqual({ day_first: true, month_first: false });
+    expect(validateVisit('{"month_first":true,"day_first":true}', during)).toEqual({ day_first: true, month_first: true });
+    expect(validateVisit('{"day_first":true,"month_first":true}', { today: '2026-11-02' })).toEqual({ day_first: true, month_first: true });
+  });
+  it('rejects the old two-flag body after the cutoff', () => {
+    expect(validateVisit('{"day_first":true,"month_first":false}', after)).toBeNull();
+    expect(validateVisit('{"day_first":true,"month_first":false}', { today: '2027-01-01' })).toBeNull();
+    expect(validateVisit('{"day_first":true,"month_first":false}', { today: '2026-10-20', legacyUntil: '2026-10-19' })).toBeNull();
   });
   it.each([
     '', 'null', '[]', '"x"', '1', '{', '{}',
     '{"day_first":true}',
+    '{"week_first":true}',
+    '{"day_first":true,"week_first":true}',
+    '{"month_first":true,"week_first":true}',
     '{"day_first":"true","month_first":false}',
     '{"day_first":1,"month_first":0}',
     '{"day_first":true,"month_first":false,"id":"abc"}',
     '{"day_first":true,"month_first":null}',
     '[{"day_first":true,"month_first":false}]',
+    '{"day_first":true,"month_first":false,"week_first":"true"}',
+    '{"day_first":true,"month_first":false,"week_first":null}',
+    '{"day_first":true,"month_first":false,"week_first":1}',
+    '{"day_first":true,"month_first":"no","week_first":true}',
+    '{"day_first":true,"month_first":false,"week_first":true,"id":"abc"}',
+    '{"day_first":true,"month_first":false,"week_first":true,"ua":"x"}',
+    '{"day_first":true,"month_first":false,"week_first":true,"week_firsts":true}',
+    '{"day_first":true,"month_first":false,"year_first":true}',
+    '[{"day_first":true,"month_first":false,"week_first":true}]',
   ])('rejects %s', (raw) => {
-    expect(validateVisit(raw)).toBeNull();
+    expect(validateVisit(raw, during)).toBeNull();
+  });
+});
+
+describe('visitRow', () => {
+  it('stores only the date and the flags', () => {
+    expect(visitRow({ day_first: true, month_first: false, week_first: true }, '2026-10-19')).toEqual({ date: '2026-10-19', day_first: true, month_first: false, week_first: true });
+    expect(Object.keys(visitRow({ day_first: true, month_first: false, week_first: false }, '2026-10-19'))).toEqual(['date', 'day_first', 'month_first', 'week_first']);
+  });
+  it('leaves week_first out (NULL) for the old body', () => {
+    const row = visitRow({ day_first: true, month_first: true }, '2026-10-19');
+    expect(row).toEqual({ date: '2026-10-19', day_first: true, month_first: true });
+    expect('week_first' in row).toBe(false);
+  });
+  it('never copies extra fields', () => {
+    expect(visitRow({ day_first: true, month_first: true, week_first: true, ip: '1.2.3.4' }, '2026-10-19')).not.toHaveProperty('ip');
   });
 });
 
