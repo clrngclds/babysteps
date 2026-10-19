@@ -41,6 +41,8 @@ function buildFull(version: number, activities: Activity[], milestonesFile: Mile
     msToActs.set(mid, l);
   }
   for (const l of msToActs.values()) l.sort((x, y) => x.month - y.month || x.title.localeCompare(y.title));
+  // The catalog build already drops retired outings; filter again so older or hand-built catalogs behave.
+  outings = outings.filter((o) => !o.status || o.status === 'published');
   return {
     version,
     activities: visible,

@@ -19,16 +19,19 @@
     "@types/node": "^22.20.4",
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
+    "esbuild": "^0.28.2",
     "tsx": "^4.20.3",
     "typescript": "^5.9.3",
     "vitest": "^5.0.5"
   },
   "dependencies": {
+    "fast-xml-parser": "^5.11.2",
     "idb-keyval": "^6.3.0",
     "minisearch": "^7.2.0",
     "next": "^15.5.28",
     "react": "^19.3.1",
-    "react-dom": "^19.3.1"
+    "react-dom": "^19.3.1",
+    "yaml": "^2.9.1"
   },
   "engines": {
     "node": ">=20"

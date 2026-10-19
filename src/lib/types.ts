@@ -29,6 +29,9 @@ export interface Outing {
   last_verified?: string;
   added_at?: string;
   notes?: string;
+  /** Phase 3 lifecycle fields (SDD 6.2): set by the content pipeline. */
+  status?: 'published' | 'retired' | string;
+  origin?: 'seed' | 'pipeline' | string;
 }
 
 export interface CategoryInfo {

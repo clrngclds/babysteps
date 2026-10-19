@@ -23,8 +23,10 @@ export interface Activity {
   source_url: string;
   verified: boolean;
   paid: boolean;
+  /** Phase 3 lifecycle fields (SDD 6.2): set by the content pipeline. */
   added_at?: string;
-  status?: string;
+  status?: 'published' | 'retired' | string;
+  origin?: 'seed' | 'pipeline' | string;
 }
 
 export interface Milestone {

@@ -15,9 +15,9 @@ export const CATEGORY_LABELS: Record<Category, string> = {
 
 export const NEW_WINDOW_MS = 7 * DAY_MS;
 
-/** True when added_at is within 7 days of now. */
+/** True when added_at is within 7 days of now. Seed content (the original dataset) is never "new". */
 export function isNew(a: Activity, now: number): boolean {
-  if (!a.added_at) return false;
+  if (!a.added_at || a.origin === 'seed') return false;
   const t = Date.parse(a.added_at);
   return !Number.isNaN(t) && now - t <= NEW_WINDOW_MS;
 }
