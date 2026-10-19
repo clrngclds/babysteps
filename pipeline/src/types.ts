@@ -346,6 +346,10 @@ export interface RunReport {
   llm_usage: Record<string, LlmUsage>;
   est_cost_usd: number;
   failures: string[];
+  /** Why discovered items produced no candidate (fetch failed, no official page, nothing usable...). */
+  skips?: Record<string, number>;
+  /** Maintenance results (link check, date confirmation, coverage guard, expiry, venue re-check). */
+  maintenance?: Record<string, unknown>;
 }
 
 export const MAX_ATTEMPTS = 4;

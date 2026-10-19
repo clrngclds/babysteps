@@ -30,7 +30,10 @@
     "url": "https://go.gov.sg/jbcg",
     "last_verified": "2026-10-18",
     "notes": "Tue–Sun 8am–7pm, last admission 6.30pm; closed Mondays except public holidays. For children 12 and under; adults enter only with a child. Changing areas and outdoor showers for water play; no food outlet inside. Short link redirects to sbg.nparks.gov.sg.",
-    "paid": false
+    "paid": false,
+    "added_at": "2026-10-18",
+    "status": "published",
+    "origin": "seed"
   },
   {
     "id": "sg-venue-gbtb-childrens-garden",
@@ -63,7 +66,10 @@
     "url": "https://www.gardensbythebay.com.sg/en/things-to-do/attractions/far-east-organization-childrens-garden.html",
     "last_verified": "2026-10-18",
     "notes": "Thu–Sun and public holidays 9am–7pm (last admission 6pm; water play closes 6.30pm). During school holidays also open Tue–Wed (school year-end holidays run 21 Nov–31 Dec 2026). Toddler Play Zone is for ages 1–5; the main Water Play and Rainforest Tree Houses are for ages 6–12. Entrance moved near the Sun Pavilion from 26 Mar 2026 because of bridge works.",
-    "paid": false
+    "paid": false,
+    "added_at": "2026-10-18",
+    "status": "published",
+    "origin": "seed"
   },
   {
     "id": "sg-venue-gbtb-flower-dome",
@@ -95,7 +101,10 @@
     "url": "https://www.gardensbythebay.com.sg/en/plan-your-visit/opening-hours.html",
     "last_verified": "2026-10-18",
     "notes": "Daily 9am–9pm. Seasonal displays: Christmas Train Show 20 Nov 2026–3 Jan 2027; Spring Blossoms (Lunar New Year) 15 Jan–28 Feb 2027. The neighbouring Cloud Forest currently features a Jurassic World experience, which may frighten some toddlers.",
-    "paid": true
+    "paid": true,
+    "added_at": "2026-10-18",
+    "status": "published",
+    "origin": "seed"
   },
   {
     "id": "sg-venue-gbtb-active-garden",
@@ -128,7 +137,10 @@
     "url": "https://www.gardensbythebay.com.sg/en/things-to-do/attractions/active-garden-propnex-family-zone.html",
     "last_verified": "2026-10-18",
     "notes": "Daily 5am–2am. Pets allowed. Nearest carpark: Bayfront Plaza. Also has a community edible garden.",
-    "paid": false
+    "paid": false,
+    "added_at": "2026-10-18",
+    "status": "published",
+    "origin": "seed"
   },
   {
     "id": "sg-venue-kidsstop",
@@ -162,7 +174,10 @@
     "url": "https://www.science.edu.sg/visit-us/kidsstop/for-families",
     "last_verified": "2026-10-18",
     "notes": "Still open at the current Jurong East site as of Oct 2026; the Science Centre's planned move to a new building in the Jurong Lake District has not happened yet. Two sessions Tue–Sun: 10am–1pm and 2pm–5pm (closed 1–2pm for cleaning); closed Mondays except public and school holidays. Book a session before going. Private-event closures: 10, 11 and 19 Nov 2026, 10am–1pm. science.edu.sg returns HTTP 202 (bot check) to curl; page confirmed via Google index and Wayback Machine (Sep 2026).",
-    "paid": true
+    "paid": true,
+    "added_at": "2026-10-18",
+    "status": "published",
+    "origin": "seed"
   },
   {
     "id": "sg-venue-childrens-museum",
@@ -194,7 +209,10 @@
     "url": "https://www.heritage.sg/childrensmuseum",
     "last_verified": "2026-10-18",
     "notes": "Level 2 closed from 28 Sep 2026; whole museum closed 13 Nov 2026; new exhibition opens 14 Nov 2026. No specific toddler age guidance found. heritage.sg returns HTTP 403 to curl; page confirmed via Google index and Wayback Machine (Oct 2026).",
-    "paid": false
+    "paid": false,
+    "added_at": "2026-10-18",
+    "status": "published",
+    "origin": "seed"
   },
   {
     "id": "sg-venue-keppel-centre",
@@ -227,7 +245,10 @@
     "url": "https://www.nationalgallery.sg/sg/en/visit/visitor-information/keppel-centre-for-art-education.html",
     "last_verified": "2026-10-18",
     "notes": "Open daily; closes 12.30–1pm and 3.30–4pm for cleaning; last entry 6.40pm. Designed for ages 4–12, so younger toddlers need close help. Stroller parking at entrance; wheelchair accessible. Expect up to 30-minute waits on busy weekends. Toddler sessions run separately (see GalleryToddlers!).",
-    "paid": false
+    "paid": false,
+    "added_at": "2026-10-18",
+    "status": "published",
+    "origin": "seed"
   },
   {
     "id": "sg-venue-artscience-future-world",
@@ -259,7 +280,10 @@
     "url": "https://www.marinabaysands.com/museum/exhibitions/future-world.html",
     "last_verified": "2026-10-18",
     "notes": "Opens 10am. Rooms are dark with bright projections; may overwhelm some babies. marinabaysands.com timed out to curl during checks; page confirmed via Wayback Machine snapshot (2 Oct 2026).",
-    "paid": true
+    "paid": true,
+    "added_at": "2026-10-18",
+    "status": "published",
+    "origin": "seed"
   },
   {
     "id": "sg-venue-esplanade-pips-playbox",
@@ -292,7 +316,10 @@
     "url": "https://www.esplanade.com/visit/venues-and-spaces/spaces/pips-playbox",
     "last_verified": "2026-10-18",
     "notes": "Mon–Sun 11am–6pm, closed 2–3pm for cleaning. Register at entrance (everyone, including infants). Shoes off; no food. Nursing room on Level 4 outside PLAYbox (8am–6pm) and on Mezzanine level (8am–9pm); children's toilets and stroller parking on Level 4. Was closed 8–12 Oct 2026 for the F1 race.",
-    "paid": false
+    "paid": false,
+    "added_at": "2026-10-18",
+    "status": "published",
+    "origin": "seed"
   },
   {
     "id": "sg-venue-central-library",
@@ -322,7 +349,10 @@
     "url": "https://www.nlb.gov.sg/main/visit-us/our-libraries-and-locations/libraries/central-library",
     "last_verified": "2026-10-18",
     "notes": "Has a nursing room and programme rooms. Reopened Jan 2024 after renovation. Hosts Early READ Fiesta 5–6 Dec 2026. Public libraries are typically open 10am–9pm daily; check NLB for holiday hours. nlb.gov.sg returns HTTP 202 (bot check) to curl; page confirmed via Google index and Wayback Machine (Mar 2026).",
-    "paid": false
+    "paid": false,
+    "added_at": "2026-10-18",
+    "status": "published",
+    "origin": "seed"
   },
   {
     "id": "sg-venue-library-harbourfront",
@@ -352,7 +382,10 @@
     "url": "https://www.nlb.gov.sg/main/visit-us/our-libraries-and-locations/libraries/library-harbourfront",
     "last_verified": "2026-10-18",
     "notes": "Children's section includes interactive features such as a Tinker Truck and AR books (per TheSmartLocal, 2021; check current layout). Typically 10am–9pm daily. nlb.gov.sg returns HTTP 202 (bot check) to curl; URL confirmed via Wayback Machine (200 snapshot Nov 2025).",
-    "paid": false
+    "paid": false,
+    "added_at": "2026-10-18",
+    "status": "published",
+    "origin": "seed"
   },
   {
     "id": "sg-venue-punggol-regional-library",
@@ -384,7 +417,10 @@
     "url": "https://www.nlb.gov.sg/main/visit-us/our-libraries-and-locations/libraries/punggol-regional-library",
     "last_verified": "2026-10-18",
     "notes": "Includes calm pods and sensory kits for children with additional needs. Hosts Early READ Fiesta on 21 Nov 2026. Floor layout per Little Day Out. nlb.gov.sg returns HTTP 202 (bot check) to curl; URL confirmed via Wayback Machine (200 snapshot Jan 2026).",
-    "paid": false
+    "paid": false,
+    "added_at": "2026-10-18",
+    "status": "published",
+    "origin": "seed"
   },
   {
     "id": "sg-venue-woodlands-regional-library",
@@ -414,7 +450,10 @@
     "url": "https://www.nlb.gov.sg/main/visit-us/our-libraries-and-locations/libraries/woodlands-regional-library",
     "last_verified": "2026-10-18",
     "notes": "Hosts Early READ Fiesta 13–14 Nov 2026. Children's section features per TheSmartLocal (2021). Typically 10am–9pm daily. nlb.gov.sg returns HTTP 202 (bot check) to curl; URL confirmed via Wayback Machine (200 snapshot Nov 2025).",
-    "paid": false
+    "paid": false,
+    "added_at": "2026-10-18",
+    "status": "published",
+    "origin": "seed"
   },
   {
     "id": "sg-venue-tampines-regional-library",
@@ -444,7 +483,10 @@
     "url": "https://www.nlb.gov.sg/main/visit-us/our-libraries-and-locations/libraries/tampines-regional-library",
     "last_verified": "2026-10-18",
     "notes": "Our Tampines Hub also has other family facilities. Typically 10am–9pm daily. nlb.gov.sg returns HTTP 202 (bot check) to curl; URL confirmed via Wayback Machine (200 snapshot Jan 2026).",
-    "paid": false
+    "paid": false,
+    "added_at": "2026-10-18",
+    "status": "published",
+    "origin": "seed"
   },
   {
     "id": "sg-venue-jurong-regional-library",
@@ -474,7 +516,10 @@
     "url": "https://www.nlb.gov.sg/main/visit-us/our-libraries-and-locations/libraries/jurong-regional-library",
     "last_verified": "2026-10-18",
     "notes": "Listed as 'Jurong Library' in NLB's programme calendar. Planned move to the Jurong East Integrated Transport Hub (reported for around 2028); still at current site. Hosts Early READ Fiesta 19–20 Mar 2027. nlb.gov.sg returns HTTP 202 (bot check) to curl; URL confirmed via Wayback Machine (200 snapshot Nov 2025).",
-    "paid": false
+    "paid": false,
+    "added_at": "2026-10-18",
+    "status": "published",
+    "origin": "seed"
   },
   {
     "id": "sg-venue-singapore-zoo",
@@ -507,7 +552,10 @@
     "url": "https://www.mandai.com/en/singapore-zoo.html",
     "last_verified": "2026-10-18",
     "notes": "Daily 9am–6pm, last admission 5pm. Mandai suggests 3–4 hours. Bring swimwear and a change of clothes for KidzWorld water play.",
-    "paid": true
+    "paid": true,
+    "added_at": "2026-10-18",
+    "status": "published",
+    "origin": "seed"
   },
   {
     "id": "sg-venue-bird-paradise",
@@ -540,7 +588,10 @@
     "url": "https://www.mandai.com/en/bird-paradise.html",
     "last_verified": "2026-10-18",
     "notes": "Daily 9am–6pm, last admission 5pm. Egg Splash closed from 2.30pm on 10 Nov 2026 until 12 Nov 2026 for maintenance. Penguin Cove is indoor and air-conditioned.",
-    "paid": true
+    "paid": true,
+    "added_at": "2026-10-18",
+    "status": "published",
+    "origin": "seed"
   },
   {
     "id": "sg-venue-river-wonders",
@@ -571,7 +622,10 @@
     "url": "https://www.mandai.com/en/river-wonders.html",
     "last_verified": "2026-10-18",
     "notes": "Daily 9am–6pm, last entry 5pm. Mandai suggests about 2 hours, a manageable length for toddlers.",
-    "paid": true
+    "paid": true,
+    "added_at": "2026-10-18",
+    "status": "published",
+    "origin": "seed"
   },
   {
     "id": "sg-venue-rainforest-wild-adventure",
@@ -602,7 +656,10 @@
     "url": "https://www.mandai.com/en/rainforest-wild-adventure.html",
     "last_verified": "2026-10-18",
     "notes": "Daily 9am–6pm, last entry 5pm. Elevated walkway has step-free access for strollers. Most Adventure+ activities (zipline, swings) are for older children; toddlers mainly walk the trails and visit the play areas. Formerly Mandai Rainforest Wild ASIA.",
-    "paid": true
+    "paid": true,
+    "added_at": "2026-10-18",
+    "status": "published",
+    "origin": "seed"
   },
   {
     "id": "sg-venue-curiosity-cove",
@@ -635,7 +692,10 @@
     "url": "https://www.mandai.com/en/curiosity-cove.html",
     "last_verified": "2026-10-18",
     "notes": "Mon–Fri 10am–5.30pm (last entry 4.30pm); Sat, Sun, school holidays and public holidays 10am–6.30pm (last entry 5.30pm). Halloween event 'The Mischief Within' running in Oct 2026.",
-    "paid": true
+    "paid": true,
+    "added_at": "2026-10-18",
+    "status": "published",
+    "origin": "seed"
   },
   {
     "id": "sg-venue-singapore-oceanarium",
@@ -666,7 +726,10 @@
     "url": "https://www.singaporeoceanarium.com/en/visit.html",
     "last_verified": "2026-10-18",
     "notes": "Officially opened July 2026. Stroller-friendly. Opening hours not readable from the official page by script; resellers list roughly 10am–7pm daily, so check the official operating-hours page. Marine Mammal Habitat viewing panel temporarily closed. Official site returns HTTP 403 to plain 'Mozilla/5.0' curl but 200 to a full browser user agent.",
-    "paid": true
+    "paid": true,
+    "added_at": "2026-10-18",
+    "status": "published",
+    "origin": "seed"
   },
   {
     "id": "sg-venue-sentosa-sensoryscape",
@@ -698,7 +761,10 @@
     "url": "https://www.sentosa.com.sg/en/things-to-do/attractions/sensoryscape/",
     "last_verified": "2026-10-18",
     "notes": "Open 24 hours. ImagiNite light and AR show 7.30–9.15pm daily. Wheelchair accessible. Good stroller walk before or after the Oceanarium.",
-    "paid": false
+    "paid": false,
+    "added_at": "2026-10-18",
+    "status": "published",
+    "origin": "seed"
   },
   {
     "id": "sg-venue-coney-island",
@@ -730,7 +796,10 @@
     "url": "https://www.nparks.gov.sg/visit/parks/park-detail/coney-island-park",
     "last_verified": "2026-10-18",
     "notes": "Open 7am–7pm. Paths are mostly unpaved; a rugged stroller or carrier works better. Little shade in places.",
-    "paid": false
+    "paid": false,
+    "added_at": "2026-10-18",
+    "status": "published",
+    "origin": "seed"
   },
   {
     "id": "sg-venue-admiralty-park",
@@ -761,7 +830,10 @@
     "url": "https://www.nparks.gov.sg/visit/parks/park-detail/admiralty-park",
     "last_verified": "2026-10-18",
     "notes": "Open 24 hours; nature area 7am–7pm. Slides are graded by age; follow the age signs. North entrance closed permanently since Aug 2023.",
-    "paid": false
+    "paid": false,
+    "added_at": "2026-10-18",
+    "status": "published",
+    "origin": "seed"
   },
   {
     "id": "sg-venue-woodlands-waterfront",
@@ -791,7 +863,10 @@
     "url": "https://www.nparks.gov.sg/visit/parks/park-detail/woodlands-waterfront-park",
     "last_verified": "2026-10-18",
     "notes": "Open 24 hours. Carpark along Admiralty West Road. On the Northern Explorer Loop park connector.",
-    "paid": false
+    "paid": false,
+    "added_at": "2026-10-18",
+    "status": "published",
+    "origin": "seed"
   },
   {
     "id": "sg-venue-punggol-waterway",
@@ -822,7 +897,10 @@
     "url": "https://www.nparks.gov.sg/visit/parks/park-detail/punggol-waterway-park",
     "last_verified": "2026-10-18",
     "notes": "Open 24 hours. The old water play area near Carpark B was demolished around 2022 (per Little Day Out); do not expect water play here.",
-    "paid": false
+    "paid": false,
+    "added_at": "2026-10-18",
+    "status": "published",
+    "origin": "seed"
   },
   {
     "id": "sg-venue-sengkang-riverside",
@@ -854,7 +932,10 @@
     "url": "https://www.nparks.gov.sg/visit/parks/park-detail/sengkang-riverside-park",
     "last_verified": "2026-10-18",
     "notes": "Open 24 hours. A section of track is closed for pipe works until 31 Dec 2026; follow detour signs.",
-    "paid": false
+    "paid": false,
+    "added_at": "2026-10-18",
+    "status": "published",
+    "origin": "seed"
   },
   {
     "id": "sg-venue-east-coast-park",
@@ -886,7 +967,10 @@
     "url": "https://www.nparks.gov.sg/visit/parks/park-detail/east-coast-park",
     "last_verified": "2026-10-18",
     "notes": "Park open 24 hours. Coastal PlayGrove water play: 8am–8pm Tue–Sun, closed Mondays, recommended ages 5–12. Nature playgarden: 24 hours, recommended ages 3–12. Beach sand play suits younger toddlers. Box jellyfish advisory for sea entry.",
-    "paid": false
+    "paid": false,
+    "added_at": "2026-10-18",
+    "status": "published",
+    "origin": "seed"
   },
   {
     "id": "sg-venue-pasir-ris-park",
@@ -918,7 +1002,10 @@
     "url": "https://www.nparks.gov.sg/visit/parks/park-detail/pasir-ris-park",
     "last_verified": "2026-10-18",
     "notes": "Open 24 hours. Carpark A (Area 1) is closest to many facilities.",
-    "paid": false
+    "paid": false,
+    "added_at": "2026-10-18",
+    "status": "published",
+    "origin": "seed"
   },
   {
     "id": "sg-venue-bishan-amk-park",
@@ -951,7 +1038,10 @@
     "url": "https://www.nparks.gov.sg/visit/parks/park-detail/bishan-ang-mo-kio-park",
     "last_verified": "2026-10-18",
     "notes": "Park open 24 hours. Water playground: Thu–Sun and public holidays, 8–11am and 4–8pm (NParks). Inclusive and adventure playgrounds open 24 hours; adventure playground has bucket swings and small structures for toddlers.",
-    "paid": false
+    "paid": false,
+    "added_at": "2026-10-18",
+    "status": "published",
+    "origin": "seed"
   },
   {
     "id": "sg-venue-jurong-lake-gardens",
@@ -983,7 +1073,10 @@
     "url": "https://juronglakegardens.nparks.gov.sg/play/",
     "last_verified": "2026-10-18",
     "notes": "Forest Ramble and Clusia Cove are closed on Mondays (and on Tuesday if Monday is a public holiday). Water play hours not stated on the page checked. Chinese and Japanese Gardens reopened Sep 2024.",
-    "paid": false
+    "paid": false,
+    "added_at": "2026-10-18",
+    "status": "published",
+    "origin": "seed"
   },
   {
     "id": "sg-venue-west-coast-park",
@@ -1014,7 +1107,10 @@
     "url": "https://www.nparks.gov.sg/visit/parks/park-detail/west-coast-park",
     "last_verified": "2026-10-18",
     "notes": "Open 24 hours. Part of the Area 1 footpath closed for repairs until 31 Dec 2026.",
-    "paid": false
+    "paid": false,
+    "added_at": "2026-10-18",
+    "status": "published",
+    "origin": "seed"
   },
   {
     "id": "sg-venue-hortpark",
@@ -1046,7 +1142,10 @@
     "url": "https://www.nparks.gov.sg/visit/parks/park-detail/hortpark",
     "last_verified": "2026-10-18",
     "notes": "Open 6am–11pm. Visitor services 9am–12pm and 1–5pm weekdays, 8.30am–12.30pm weekends and public holidays.",
-    "paid": false
+    "paid": false,
+    "added_at": "2026-10-18",
+    "status": "published",
+    "origin": "seed"
   },
   {
     "id": "sg-venue-sungei-buloh",
@@ -1077,7 +1176,10 @@
     "url": "https://www.nparks.gov.sg/visit/parks/park-detail/sungei-buloh-wetland-reserve",
     "last_verified": "2026-10-18",
     "notes": "Open 7am–7pm, last entry 6.30pm. Some areas close at high tide or in bad weather; check closure notices. Bring insect repellent.",
-    "paid": false
+    "paid": false,
+    "added_at": "2026-10-18",
+    "status": "published",
+    "origin": "seed"
   },
   {
     "id": "sg-venue-jewel-canopy-park",
@@ -1109,7 +1211,10 @@
     "url": "https://www.jewelchangiairport.com/en/attractions/canopy-park.html",
     "last_verified": "2026-10-18",
     "notes": "Mon–Thu 10am–9pm; Fri–Sun, eve of public holidays and public holidays 10am–10pm; last admission 30 minutes before closing. Child ticket holders must be with a paying adult.",
-    "paid": true
+    "paid": true,
+    "added_at": "2026-10-18",
+    "status": "published",
+    "origin": "seed"
   },
   {
     "id": "sg-venue-jewel-rain-vortex",
@@ -1141,7 +1246,10 @@
     "url": "https://www.jewelchangiairport.com/en/attractions/rain-vortex.html",
     "last_verified": "2026-10-18",
     "notes": "Daily 10am–10pm. Light and music shows Mon–Thu 8pm and 9pm; Fri–Sun, public holidays and eves 8pm, 9pm and 10pm. Air-conditioned and stroller-friendly.",
-    "paid": false
+    "paid": false,
+    "added_at": "2026-10-18",
+    "status": "published",
+    "origin": "seed"
   },
   {
     "id": "sg-venue-changi-airport-play",
@@ -1172,7 +1280,10 @@
     "url": "https://www.changiairport.com/en/experience/kids.html",
     "last_verified": "2026-10-18",
     "notes": "Terminal 3 B2 airplane playground (ages 2–5) and Terminal 1 Level 2 viewing gallery playground per Little Day Out (June 2026); the official page lists family play areas but does not detail these. Many play areas are in transit zones for passengers only.",
-    "paid": false
+    "paid": false,
+    "added_at": "2026-10-18",
+    "status": "published",
+    "origin": "seed"
   },
   {
     "id": "sg-prog-nlb-baby-lapsit",
@@ -1204,7 +1315,10 @@
     "url": "https://nlb.libcal.com/calendar?cid=-1&t=d&d=0000-00-00&cal=-1&audience=2275&inc=0",
     "last_verified": "2026-10-18",
     "notes": "Register on NLB's GoLibrary calendar, one ticket per person (parent and baby each need one). Attendance taken by scanning a QR code in the NLB Mobile app. Arrive 15 minutes early; late seats may go to walk-ins. Usually weekend mornings around 11.30am. Upcoming: 31 Oct 2026 (Bedok, Clementi); 15, 18, 21 Nov 2026 (Choa Chu Kang). Runs islandwide, so region is set to central as a default.",
-    "paid": false
+    "paid": false,
+    "added_at": "2026-10-18",
+    "status": "published",
+    "origin": "seed"
   },
   {
     "id": "sg-prog-nlb-jiggle-read-rhyme",
@@ -1237,7 +1351,10 @@
     "url": "https://nlb.libcal.com/calendar?cid=-1&t=d&d=0000-00-00&cal=-1&audience=2281&inc=0",
     "last_verified": "2026-10-18",
     "notes": "Register on NLB's GoLibrary calendar, one ticket per person. Parents must stay. Upcoming: 25 Oct 2026 (Toa Payoh, Jurong), 29 Nov 2026 (Ang Mo Kio), all 11.30am. Screen-lite activity under Grow Well SG. Runs islandwide, so region is set to central as a default.",
-    "paid": false
+    "paid": false,
+    "added_at": "2026-10-18",
+    "status": "published",
+    "origin": "seed"
   },
   {
     "id": "sg-prog-nlb-molly",
@@ -1267,7 +1384,10 @@
     "url": "https://nlb.libcal.com/event/5972199",
     "last_verified": "2026-10-18",
     "notes": "No registration. Example schedule at Teck Ghee View (332 Ang Mo Kio Ave 1): 24 Oct, 28 Nov and 26 Dec 2026, 9am–12pm. Locations change; check the GoLibrary calendar. Region set to central as a default because stops are islandwide.",
-    "paid": false
+    "paid": false,
+    "added_at": "2026-10-18",
+    "status": "published",
+    "origin": "seed"
   },
   {
     "id": "sg-prog-gallery-toddlers",
@@ -1300,7 +1420,10 @@
     "url": "https://www.nationalgallery.sg/sg/en/workshops/gallery-toddlers.html",
     "last_verified": "2026-10-18",
     "notes": "Usually the first Saturday of the month; registration opens monthly. Next confirmed session: 7 Nov 2026, 10.30–11.10am and 11.30am–12.10pm. English only.",
-    "paid": true
+    "paid": true,
+    "added_at": "2026-10-18",
+    "status": "published",
+    "origin": "seed"
   },
   {
     "id": "sg-prog-onepa-cc-classes",
@@ -1334,7 +1457,10 @@
     "url": "https://www.onepa.gov.sg/courses",
     "last_verified": "2026-10-18",
     "notes": "Search onePA by age and location; offerings change each term and some are run by private operators. Example course is for ages 18 months to 3 years 11 months (children only, not parent-accompanied). Region set to central as a default because courses are islandwide.",
-    "paid": true
+    "paid": true,
+    "added_at": "2026-10-18",
+    "status": "published",
+    "origin": "seed"
   },
   {
     "id": "sg-prog-esplanade-playtime",
@@ -1366,7 +1492,10 @@
     "url": "https://www.esplanade.com/whats-on/festivals-and-series/playtime",
     "last_verified": "2026-10-18",
     "notes": "Only suits children who have turned 3. 2026 runs were Jan–Feb (Burp), May (Together) and Aug (The Amazing Sarong); 2025 had runs in Feb–Mar, May and Aug. No run in Oct 2026–Mar 2027 is listed as of 18 Oct 2026; based on past years the next run is likely early 2027 (unconfirmed).",
-    "paid": true
+    "paid": true,
+    "added_at": "2026-10-18",
+    "status": "published",
+    "origin": "seed"
   },
   {
     "id": "sg-event-early-read-fiesta-woodlands",
@@ -1398,7 +1527,10 @@
     "url": "https://nlb.libcal.com/event/5973514",
     "last_verified": "2026-10-18",
     "notes": "Early READ Fiesta 2026/2027 ('Where Reading Meets Discovery!') for ages 0–6: storytelling, interactive stations and a token for completing all stations; 10am–5pm. Dates from NLB's GoLibrary listing for the pre-Fiesta booth, which lists all four Fiesta stops; individual Fiesta-day listings were not yet posted on 18 Oct 2026.",
-    "paid": false
+    "paid": false,
+    "added_at": "2026-10-18",
+    "status": "published",
+    "origin": "seed"
   },
   {
     "id": "sg-event-early-read-fiesta-punggol",
@@ -1430,7 +1562,10 @@
     "url": "https://nlb.libcal.com/event/5973514",
     "last_verified": "2026-10-18",
     "notes": "Early READ Fiesta 2026/2027 ('Where Reading Meets Discovery!') for ages 0–6: storytelling, interactive stations and a token for completing all stations; 10am–5pm. Dates from NLB's GoLibrary listing for the pre-Fiesta booth, which lists all four Fiesta stops; individual Fiesta-day listings were not yet posted on 18 Oct 2026. Same day: bilingual Chinese/English story 'Who Ate My Biscuit?' at 11.30am.",
-    "paid": false
+    "paid": false,
+    "added_at": "2026-10-18",
+    "status": "published",
+    "origin": "seed"
   },
   {
     "id": "sg-event-early-read-fiesta-central",
@@ -1462,7 +1597,10 @@
     "url": "https://nlb.libcal.com/event/5973514",
     "last_verified": "2026-10-18",
     "notes": "Early READ Fiesta 2026/2027 ('Where Reading Meets Discovery!') for ages 0–6: storytelling, interactive stations and a token for completing all stations; 10am–5pm. Dates from NLB's GoLibrary listing for the pre-Fiesta booth, which lists all four Fiesta stops; individual Fiesta-day listings were not yet posted on 18 Oct 2026.",
-    "paid": false
+    "paid": false,
+    "added_at": "2026-10-18",
+    "status": "published",
+    "origin": "seed"
   },
   {
     "id": "sg-event-early-read-fiesta-jurong",
@@ -1494,7 +1632,10 @@
     "url": "https://nlb.libcal.com/event/5973514",
     "last_verified": "2026-10-18",
     "notes": "Early READ Fiesta 2026/2027 ('Where Reading Meets Discovery!') for ages 0–6: storytelling, interactive stations and a token for completing all stations; 10am–5pm. Dates from NLB's GoLibrary listing for the pre-Fiesta booth, which lists all four Fiesta stops; individual Fiesta-day listings were not yet posted on 18 Oct 2026. Falls in the March 2027 school holidays (13–21 Mar).",
-    "paid": false
+    "paid": false,
+    "added_at": "2026-10-18",
+    "status": "published",
+    "origin": "seed"
   },
   {
     "id": "sg-event-nlb-who-ate-my-biscuit",
@@ -1524,7 +1665,10 @@
     "url": "https://nlb.libcal.com/event/5976689",
     "last_verified": "2026-10-18",
     "notes": "Part of Early READ Fiesta 2026/2027. Check the listing for registration details.",
-    "paid": false
+    "paid": false,
+    "added_at": "2026-10-18",
+    "status": "published",
+    "origin": "seed"
   },
   {
     "id": "sg-event-nlb-tiny-tales-tunes",
@@ -1558,7 +1702,10 @@
     "url": "https://nlb.libcal.com/event/5976681",
     "last_verified": "2026-10-18",
     "notes": "For babies aged 0–1. Registration required, one ticket per person.",
-    "paid": false
+    "paid": false,
+    "added_at": "2026-10-18",
+    "status": "published",
+    "origin": "seed"
   },
   {
     "id": "sg-event-nlb-raising-readers-booths-bedok",
@@ -1590,7 +1737,10 @@
     "url": "https://nlb.libcal.com/event/5976680",
     "last_verified": "2026-10-18",
     "notes": "For ages 2–6; parents accompany younger children.",
-    "paid": false
+    "paid": false,
+    "added_at": "2026-10-18",
+    "status": "published",
+    "origin": "seed"
   },
   {
     "id": "sg-event-nlb-musical-stories-swimmy",
@@ -1621,7 +1771,10 @@
     "url": "https://nlb.libcal.com/event/5976696",
     "last_verified": "2026-10-18",
     "notes": "For ages 1 and above. Walk-in, first come first served.",
-    "paid": false
+    "paid": false,
+    "added_at": "2026-10-18",
+    "status": "published",
+    "origin": "seed"
   },
   {
     "id": "sg-event-nlb-tamil-vidhaigal",
@@ -1651,7 +1804,10 @@
     "url": "https://nlb.libcal.com/event/5977659",
     "last_verified": "2026-10-18",
     "notes": "Two sessions: 2–3pm and 3–4pm. Slots limited; check the listing for registration.",
-    "paid": false
+    "paid": false,
+    "added_at": "2026-10-18",
+    "status": "published",
+    "origin": "seed"
   },
   {
     "id": "sg-event-nlb-live-storytelling-sengkang",
@@ -1681,7 +1837,10 @@
     "url": "https://nlb.libcal.com/event/5906167",
     "last_verified": "2026-10-18",
     "notes": "Walk-in, no registration. For age 3 and above only.",
-    "paid": false
+    "paid": false,
+    "added_at": "2026-10-18",
+    "status": "published",
+    "origin": "seed"
   },
   {
     "id": "sg-event-gbtb-christmas-train-show-2026",
@@ -1711,7 +1870,10 @@
     "url": "https://www.gardensbythebay.com.sg/en/things-to-do/calendar-of-events/gardens-by-the-bay-christmas-train-show-2026.html",
     "last_verified": "2026-10-18",
     "notes": "Third edition. Air-conditioned and stroller-friendly.",
-    "paid": true
+    "paid": true,
+    "added_at": "2026-10-18",
+    "status": "published",
+    "origin": "seed"
   },
   {
     "id": "sg-event-gbtb-spring-blossoms-2027",
@@ -1743,7 +1905,10 @@
     "url": "https://www.gardensbythebay.com.sg/en/things-to-do/calendar-of-events/spring-blossoms.html",
     "last_verified": "2026-10-18",
     "notes": "Chinese New Year falls on 6–7 Feb 2027.",
-    "paid": true
+    "paid": true,
+    "added_at": "2026-10-18",
+    "status": "published",
+    "origin": "seed"
   },
   {
     "id": "sg-event-christmas-wonderland-2026",
@@ -1775,7 +1940,10 @@
     "url": "https://www.christmaswonderland.sg/",
     "last_verified": "2026-10-18",
     "notes": "2026 dates not on the official site as of 18 Oct 2026. ParentLah lists 27 Nov 2026–1 Jan 2027; the 2025 edition ran 29 Nov 2025–1 Jan 2026, 6.30–11pm. Evening timing and crowds may be hard for babies; go early.",
-    "paid": true
+    "paid": true,
+    "added_at": "2026-10-18",
+    "status": "published",
+    "origin": "seed"
   },
   {
     "id": "sg-event-christmas-great-street-2026",
@@ -1805,7 +1973,10 @@
     "url": "https://christmas.orchardroad.org/",
     "last_verified": "2026-10-18",
     "notes": "Official site still shows the 2025 edition (8 Nov 2025–1 Jan 2026) as of 18 Oct 2026. ParentLah lists a 20 Nov 2026 start; end date estimated as 1 Jan 2027 from the 2025 pattern. Covered walkways make it partly rain-friendly.",
-    "paid": false
+    "paid": false,
+    "added_at": "2026-10-18",
+    "status": "published",
+    "origin": "seed"
   },
   {
     "id": "sg-event-deepavali-little-india-2026",
@@ -1837,7 +2008,10 @@
     "url": "https://littlebigreddot.com/deepavali-2026-little-india-light-up-festival-village/",
     "last_verified": "2026-10-18",
     "notes": "Light-up switched on 3 Oct 2026 (LISHA ceremony on Birch Road), lit daily 7pm–midnight. Festival Village on Campbell Lane runs 10 Oct–8 Nov 2026 from 7pm. Deepavali is 8 Nov 2026; 9 Nov is a public holiday. Dates come from a news report and LISHA's Instagram; no official web page found (littleindia.sg did not resolve). Light-up end date not confirmed. Crowded in the evenings.",
-    "paid": false
+    "paid": false,
+    "added_at": "2026-10-18",
+    "status": "published",
+    "origin": "seed"
   },
   {
     "id": "sg-event-river-hongbao-2027",
@@ -1870,7 +2044,10 @@
     "url": "https://www.riverhongbao.sg/",
     "last_verified": "2026-10-18",
     "notes": "2027 dates not announced as of 18 Oct 2026 (official site still shows 2026). Estimate based on 2026 (15–24 Feb, around CNY on 17 Feb): roughly 4–13 Feb 2027 around CNY on 6 Feb 2027. Fireworks are loud; consider ear protection for babies.",
-    "paid": false
+    "paid": false,
+    "added_at": "2026-10-18",
+    "status": "published",
+    "origin": "seed"
   },
   {
     "id": "sg-event-chinatown-cny-2027",
@@ -1900,7 +2077,10 @@
     "url": "https://www.chinatownfestivals.sg/",
     "last_verified": "2026-10-18",
     "notes": "Official site confirms the 2027 celebration (public vote for the centrepiece design closed 19 Jul 2026) but no dates yet. Dates here are a rough estimate (mid-Jan to late Feb 2027, around CNY on 6–7 Feb 2027), not from an official source. Very crowded near CNY eve.",
-    "paid": false
+    "paid": false,
+    "added_at": "2026-10-18",
+    "status": "published",
+    "origin": "seed"
   },
   {
     "id": "sg-event-childrens-museum-free-level1",
@@ -1930,7 +2110,10 @@
     "url": "https://www.heritage.sg/childrensmuseum",
     "last_verified": "2026-10-18",
     "notes": "Whole museum closed 13 Nov 2026; new exhibition opens 14 Nov 2026. heritage.sg returns HTTP 403 to curl; dates taken from the official page via Google index (Oct 2026).",
-    "paid": false
+    "paid": false,
+    "added_at": "2026-10-18",
+    "status": "published",
+    "origin": "seed"
   },
   {
     "id": "sg-event-esplanade-march-on-2027",
@@ -1964,6 +2147,9 @@
     "url": "https://www.esplanade.com/whats-on/festivals-and-series/march-on",
     "last_verified": "2026-10-18",
     "notes": "2027 programme not announced as of 18 Oct 2026. March On 2026 ran 12–25 Mar 2026; 2027 dates estimated to overlap the MOE March holidays (13–21 Mar 2027).",
-    "paid": true
+    "paid": true,
+    "added_at": "2026-10-18",
+    "status": "published",
+    "origin": "seed"
   }
 ]
