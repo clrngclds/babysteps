@@ -4,7 +4,7 @@ import { join } from 'node:path';
 import { buildIndex, stem } from '../src/lib/search';
 import { filterOutings, isPast, isThisWeekend, weekendRange, dateLabel } from '../src/lib/outings';
 import { activeFilterCount, DEFAULT_FILTERS, filterActivities, matchesFilters } from '../src/lib/filters';
-import { addSave, addSwipe, addTried, emptyState, lastTried, normalizeState, removeSave, swipeCount, MAX_INTERACTIONS } from '../src/lib/state';
+import { addSave, addSwipe, addTried, emptyState, type DeviceState, lastTried, normalizeState, removeSave, swipeCount, MAX_INTERACTIONS } from '../src/lib/state';
 import { computePing, visitPing } from '../src/lib/analytics';
 import type { Activity, MilestonesFile, Outing } from '../src/lib/types';
 
@@ -114,7 +114,7 @@ describe('filters', () => {
 });
 
 describe('device state', () => {
-  const s0 = { ...emptyState('2026-10-19'), birth: '2025-06' };
+  const s0: DeviceState = { ...emptyState('2026-10-19'), birth: '2025-06' };
   it('right-swipe writes swipe_like and save', () => {
     const s = addSwipe(s0, 'a1', 'like', 16, 1);
     expect(s.interactions.map((i) => i.type)).toEqual(['swipe_like', 'save']);

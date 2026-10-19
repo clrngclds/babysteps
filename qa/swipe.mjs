@@ -1,0 +1,25 @@
+import puppeteer from 'puppeteer-core';
+const b = await puppeteer.launch({ executablePath: '/usr/bin/google-chrome', headless: true, args: ['--no-sandbox'] });
+const p = await b.newPage();
+await p.setViewport({ width: 390, height: 844 });
+await p.goto('http://localhost:4321/settings/', { waitUntil: 'networkidle0' });
+await p.evaluate(() => new Promise((res) => { const r = indexedDB.open('keyval-store'); r.onupgradeneeded = () => r.result.createObjectStore('keyval'); r.onsuccess = () => { const tx = r.result.transaction('keyval','readwrite'); tx.objectStore('keyval').put({birth:'2025-06', installDismissed: true}, 'bd-state-v1'); tx.oncomplete = () => res(); }; }));
+await p.goto('http://localhost:4321/for-you/', { waitUntil: 'networkidle0' });
+await new Promise(r=>setTimeout(r,800));
+await p.click('[data-confirm-age]'); await new Promise(r=>setTimeout(r,600));
+const t1 = await p.$eval('.sc.top h3', e=>e.textContent);
+const box = await (await p.$('.sc.top .art')).boundingBox();
+await p.mouse.move(box.x+box.width/2, box.y+box.height/2); await p.mouse.down();
+for (let i=1;i<=10;i++) await p.mouse.move(box.x+box.width/2+i*18, box.y+box.height/2+2);
+await p.mouse.up(); await new Promise(r=>setTimeout(r,600));
+const t2 = await p.$eval('.sc.top h3', e=>e.textContent);
+const saved = await p.$eval('[data-tab=saved]', e=>e.textContent);
+// drag up = not ready
+const box2 = await (await p.$('.sc.top .art')).boundingBox();
+await p.mouse.move(box2.x+box2.width/2, box2.y+box2.height/2); await p.mouse.down();
+for (let i=1;i<=10;i++) await p.mouse.move(box2.x+box2.width/2, box2.y+box2.height/2-i*15);
+await p.mouse.up(); await new Promise(r=>setTimeout(r,600));
+const t3 = await p.$eval('.sc.top h3', e=>e.textContent);
+const st = await p.evaluate(() => new Promise((res) => { const r = indexedDB.open('keyval-store'); r.onsuccess = () => { const g = r.result.transaction('keyval').objectStore('keyval').get('bd-state-v1'); g.onsuccess = () => res(g.result.interactions.map(i=>i.type+(i.via?':'+i.via:'')).join(',')); }; }));
+console.log({t1,t2,t3,saved,st});
+await b.close();

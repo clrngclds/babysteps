@@ -122,15 +122,15 @@ img, svg { display: block; }
 /* ---------- chips ---------- */
 .chips { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; margin: 0 -16px 4px; padding: 0 16px; }
 .chips::-webkit-scrollbar { display: none; }
-.chip { flex: none; min-height: 48px; border: 0; background: none; padding: 0; display: flex; align-items: center; }
+.chip { flex: none; min-height: 48px; min-width: 48px; justify-content: center; border: 0; background: none; padding: 0; display: flex; align-items: center; }
 .chip > span {
   display: inline-flex; align-items: center; gap: 5px; height: 36px; padding: 0 13px; border-radius: 999px;
   background: var(--surface); border: var(--line); font-size: 13px; font-weight: 700; white-space: nowrap; color: var(--ink);
 }
 .chip[aria-pressed='true'] > span { background: var(--sage-strong); border-color: var(--sage-strong); color: #fff; }
 .chip.filters > span { background: var(--blush); border-color: transparent; }
-.chip select { appearance: none; height: 36px; padding: 0 28px 0 13px; border-radius: 999px; background: var(--surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%232F3B33' stroke-width='1.6' fill='none'/%3E%3C/svg%3E") no-repeat right 11px center; border: var(--line); font: inherit; font-size: 13px; font-weight: 700; color: var(--ink); }
-.chip select.on { background-color: var(--sage-strong); color: #fff; border-color: var(--sage-strong); background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23fff' stroke-width='1.6' fill='none'/%3E%3C/svg%3E"); }
+.chip select { appearance: none; height: 48px; padding: 0 28px 0 13px; border-radius: 999px; border: 6px solid transparent !important; background-clip: padding-box !important; box-shadow: inset 0 0 0 1.5px var(--border); background: var(--surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%232F3B33' stroke-width='1.6' fill='none'/%3E%3C/svg%3E") no-repeat right 11px center; font: inherit; font-size: 13px; font-weight: 700; color: var(--ink); }
+.chip select.on { background-color: var(--sage-strong); color: #fff; box-shadow: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23fff' stroke-width='1.6' fill='none'/%3E%3C/svg%3E"); }
 
 /* ---------- milestones card ---------- */
 .ms { display: flex; align-items: center; gap: 10px; font-size: 14px; padding: 6px 0; color: var(--ink); font-weight: 400; min-height: 40px; }
@@ -247,7 +247,7 @@ a.ms:hover span:last-child { text-decoration: underline; }
 .materials { padding-left: 20px; }
 .tried { display: flex; gap: 8px; flex-wrap: wrap; }
 .source { margin-top: 26px; padding-top: 12px; border-top: var(--line); font-size: 12.5px; color: var(--ink-muted); }
-.source a { font-weight: 500; display: inline-block; padding: 12px 0; }
+.source a { font-weight: 500; display: inline-flex; align-items: center; min-height: 48px; }
 
 /* ---------- outings ---------- */
 .ev { display: flex; gap: 12px; align-items: flex-start; position: relative; }
@@ -259,8 +259,8 @@ a.ms:hover span:last-child { text-decoration: underline; }
 
 /* ---------- for you ---------- */
 .seg { display: flex; background: var(--surface); border: var(--line); border-radius: 999px; padding: 4px; margin: 0 0 12px; }
-.seg button { flex: 1; min-height: 44px; border: 0; background: none; border-radius: 999px; font-weight: 700; font-size: 14px; color: var(--ink-muted); }
-.seg { min-height: 54px; }
+.seg button { flex: 1; min-height: 48px; border: 0; background: none; border-radius: 999px; font-weight: 700; font-size: 14px; color: var(--ink-muted); }
+.seg { min-height: 58px; }
 .seg button[aria-selected='true'] { background: var(--cat-gm); color: var(--ink); }
 .agebar { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 13.5px; font-weight: 700; padding: 0 6px 0 16px; min-height: 52px; border-radius: 999px; background: var(--surface); border: var(--line); margin-bottom: 14px; }
 .gate { text-align: center; padding: 24px 18px; }
