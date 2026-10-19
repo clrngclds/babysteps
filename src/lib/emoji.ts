@@ -14,14 +14,15 @@ const RULES: [RegExp, string][] = [
   [/crayon|draw|scribble|paint|chalk|colour|color/i, '🖍️'],
   [/mirror/i, '🪞'],
   [/puzzle|shape|sort/i, '🧩'],
-  [/stair|climb|step/i, '🪜'],
+  [/stair|climb/i, '🪜'],
   [/walk|push|wagon|cruise/i, '🚶'],
   [/tummy|roll over|lift/i, '🤸'],
   [/peek|hide|boo/i, '🙈'],
   [/garden|plant|leaf|leaves|flower|nature|outdoor|park|grass/i, '🌱'],
   [/sand|dig/i, '🏖️'],
   [/broom|sweep|clean|tidy|wipe/i, '🧹'],
-  [/cook|food|snack|meal|spoon|fork|cup|glass|drink|eat|fruit/i, '🥄'],
+  [/cup|glass|drink|pitcher/i, '🥛'],
+  [/cook|food|snack|meal|spoon|fork|eat|fruit/i, '🥄'],
   [/dress|shoe|sock|clothes|button|zip/i, '👟'],
   [/car|truck|train|vehicle/i, '🚗'],
   [/animal|dog|cat|bird|farm|zoo/i, '🐾'],
@@ -45,6 +46,7 @@ export function outingEmoji(o: Pick<Outing, 'name' | 'play_type' | 'type'>): str
   if (/library|read|story|book|tales|lapsit|rhyme/.test(n)) return '📚';
   if (/zoo|bird|animal|farm|oceanarium|aquarium/.test(n)) return '🐾';
   if (/train/.test(n)) return '🚂';
+  if (/hongbao|cny|chinatown|deepavali|blossom/.test(n)) return '🏮';
   if (/christmas|light|wonderland/.test(n)) return '🎄';
   if (/garden|park|nature|beach|reservoir/.test(n)) return '🌳';
   if (/museum|gallery|art/.test(n)) return '🎨';

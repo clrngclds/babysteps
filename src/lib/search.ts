@@ -35,6 +35,25 @@ const processTerm = (term: string) => {
   return t ? stem(t) : null;
 };
 
+/**
+ * Index side: split on whitespace and punctuation, and also keep hyphenated words joined,
+ * so "push-walker" is found by "push", "walker" and "pushwalker".
+ */
+export function indexTokens(text: string): string[] {
+  const out: string[] = [];
+  for (const chunk of text.split(/\s+/)) {
+    const parts = chunk.split(/[^\p{L}\p{N}]+/u).filter(Boolean);
+    out.push(...parts);
+    if (parts.length > 1) out.push(parts.join(''));
+  }
+  return out;
+}
+
+/** Query side: split on whitespace only and drop punctuation inside words ("Peek-a-boo!" → "peekaboo"). */
+export function queryTokens(text: string): string[] {
+  return text.split(/\s+/).map((t) => t.replace(/[^\p{L}\p{N}]+/gu, '')).filter(Boolean);
+}
+
 export interface SearchIndex {
   search(query: string, age: number | null, limit?: number): GroupedResults;
 }
@@ -50,8 +69,8 @@ export function buildIndex(cat: SearchCatalog): SearchIndex {
     fields: ['title', 'body', 'extra'],
     storeFields: ['kind'],
     processTerm,
-    tokenize: (s) => s.split(/[\s\-/–—,.;:()!?"'“”‘’]+/u),
-    searchOptions: { prefix: true, fuzzy: 0, combineWith: 'AND', boost: { title: 3, extra: 1, body: 1 } },
+    tokenize: indexTokens,
+    searchOptions: { tokenize: queryTokens, prefix: true, fuzzy: 0, combineWith: 'AND', boost: { title: 3, extra: 1, body: 1 } },
   });
   const docs: Doc[] = [
     ...cat.milestones.map((m) => ({ id: m.id, kind: 'm' as const, title: m.text, body: '', extra: '' })),

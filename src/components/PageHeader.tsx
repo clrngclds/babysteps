@@ -19,7 +19,7 @@ export function PageHeader({ title, sub, back, noSettings }: Props) {
   const { setSearchOpen } = useApp();
   const router = useRouter();
   return (
-    <div className="top">
+    <div className="phead">
       <div style={{ minWidth: 0 }}>
         {back && (
           <Link
