@@ -1,0 +1,21 @@
+# Sample combining real rules seen on Sentosa, National Gallery and Squarespace sites
+User-agent: *
+Allow: /
+Disallow: /search.html
+Disallow: /content/nationalgallerysg
+Disallow: /*/?i_cid=*
+Disallow: /account$
+Disallow: /en/search-listing/*
+Disallow: /api/
+Allow: /api/ui-extensions/
+Disallow: /*.pdf$
+
+User-agent: GPTBot
+User-agent: CCBot
+Disallow: /
+
+User-agent: Nutch
+Crawl-delay: 10
+Disallow: /
+
+Sitemap: https://www.example.sg/sitemap.xml
