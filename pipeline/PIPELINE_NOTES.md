@@ -78,7 +78,7 @@ Cloud Logging ─► log-based alert policies ─► email channel (doralyn@goog
 | Alert policy | babysteps pipeline: job failed 2 runs in a row | Log match `pipeline_job_failed_repeatedly` |
 | Alert policy | babysteps pipeline: source failing 3 weeks | Log match `source_failing` |
 | Alert policy | babysteps pipeline: publish failed or rolled back | Log match `catalog_publish_failed` |
-| Uptime check | `babysteps web /health` | `https://web-312918712586.asia-southeast1.run.app/health`, every 5 min from ASIA_PACIFIC (incl. Singapore), USA_OREGON, EUROPE; created 2026-10-19 |
+| Uptime check | `babysteps web /health` | `https://babysteps-312918712586.asia-southeast1.run.app/health`, every 5 min from ASIA_PACIFIC (incl. Singapore), USA_OREGON, EUROPE; created 2026-10-19 |
 | Alert policy | babysteps web: /health down | Uptime check failing from 2+ regions for 10 min, email |
 | Alert policy | babysteps web: 5xx responses | `run.googleapis.com/request_count`, service `web`, 5xx > 5 in 5 min |
 | Bucket prefixes | `content/`, `state/` in `gs://dc-test2-489503-babysteps-content` | `catalog/` is written only through publish/rollback |

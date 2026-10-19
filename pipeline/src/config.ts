@@ -36,7 +36,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): PipelineConfig
   return {
     project,
     bucket: env.CONTENT_BUCKET || `${project}-babysteps-content`,
-    siteUrl: (env.SITE_URL || 'https://web-312918712586.asia-southeast1.run.app').replace(/\/$/, ''),
+    siteUrl: (env.SITE_URL || 'https://babysteps-312918712586.asia-southeast1.run.app').replace(/\/$/, ''),
     // Safe default: publishing is off unless explicitly enabled.
     autoPublish: bool(env.AUTO_PUBLISH, false),
     model,

@@ -7,7 +7,7 @@ set -euo pipefail
 
 PROJECT="${PROJECT:-dc-test2-489503}"
 REGION="${REGION:-asia-southeast1}"
-SERVICE="${SERVICE:-web}"
+SERVICE="${SERVICE:-babysteps}"
 REPO="babysteps"
 CONTENT_BUCKET="${PROJECT}-babysteps-content"
 BUILD_BUCKET="${PROJECT}-babysteps-build"

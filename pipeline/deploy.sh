@@ -16,7 +16,8 @@ BUILD_SA="babysteps-build@${PROJECT}.iam.gserviceaccount.com"
 PIPE_SA="babysteps-pipeline@${PROJECT}.iam.gserviceaccount.com"
 SCHED_SA="babysteps-scheduler@${PROJECT}.iam.gserviceaccount.com"
 CHANNEL="${CHANNEL:-projects/${PROJECT}/notificationChannels/13065892833494038230}"
-SITE_URL="${SITE_URL:-https://web-312918712586.asia-southeast1.run.app}"
+SITE_URL="${SITE_URL:-https://babysteps-312918712586.asia-southeast1.run.app}"
+WEB_SERVICE="${WEB_SERVICE:-babysteps}"
 GEMINI_MODEL="${GEMINI_MODEL:-gemini-2.5-flash}"
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 
@@ -185,13 +186,13 @@ upsert_policy "$(log_policy "babysteps pipeline: source failing 3 weeks" "${JOBF
 upsert_policy "$(log_policy "babysteps pipeline: publish failed or rolled back" "${JOBFILTER} AND jsonPayload.event=\"catalog_publish_failed\"" "$DOC_PUBLISH" \
   '{"version":"EXTRACT(jsonPayload.version)","rolled_back":"EXTRACT(jsonPayload.rolledBack)"}' ERROR)"
 
-P5XX=$(jq -n --arg ch "$CHANNEL" '{
+P5XX=$(jq -n --arg ch "$CHANNEL" --arg svc "$WEB_SERVICE" '{
   displayName: "babysteps web: 5xx responses", combiner: "OR", severity: "ERROR", enabled: true,
   notificationChannels: [$ch],
   documentation: { mimeType: "text/markdown", subject: "babysteps web: 5xx responses",
-    content: "The web Cloud Run service returned more than 5 server errors (HTTP 5xx) in 5 minutes. Check Cloud Run, service web, Logs. If a catalog publish just happened, the pipeline rollback command repoints latest.json to the previous version." },
+    content: "The baby steps Cloud Run service returned more than 5 server errors (HTTP 5xx) in 5 minutes. Check Cloud Run, service babysteps, Logs. If a catalog publish just happened, the pipeline rollback command repoints latest.json to the previous version." },
   conditions: [{ displayName: "web 5xx > 5 in 5 min", conditionThreshold: {
-    filter: "resource.type=\"cloud_run_revision\" AND resource.labels.service_name=\"web\" AND metric.type=\"run.googleapis.com/request_count\" AND metric.labels.response_code_class=\"5xx\"",
+    filter: "resource.type=\"cloud_run_revision\" AND resource.labels.service_name=\"" + $svc + "\" AND metric.type=\"run.googleapis.com/request_count\" AND metric.labels.response_code_class=\"5xx\"",
     aggregations: [{ alignmentPeriod: "300s", perSeriesAligner: "ALIGN_SUM", crossSeriesReducer: "REDUCE_SUM" }],
     comparison: "COMPARISON_GT", thresholdValue: 5, duration: "0s", trigger: { count: 1 } } }],
   alertStrategy: { autoClose: "3600s" } }')
@@ -204,6 +205,13 @@ UPTIME=$(jq -n --arg host "$HOST" --arg p "$PROJECT" '{ displayName: "babysteps 
   httpCheck: { path: "/health", port: 443, useSsl: true, validateSsl: true, requestMethod: "GET" },
   period: "300s", timeout: "10s", selectedRegions: ["ASIA_PACIFIC", "USA_OREGON", "EUROPE"] }')
 existing=$(api GET "${MON}/uptimeCheckConfigs" | jq -r '.uptimeCheckConfigs[]? | select(.displayName=="babysteps web /health") | .name' 2>/dev/null || true)
+existing_host=$(api GET "${MON}/uptimeCheckConfigs" | jq -r '.uptimeCheckConfigs[]? | select(.displayName=="babysteps web /health") | .monitoredResource.labels.host' 2>/dev/null || true)
+if [[ -n "$existing" && "$existing_host" != "$HOST" ]]; then
+  # The monitored host can't be changed in place: delete and recreate (service renamed web -> babysteps).
+  echo "uptime check host changed (${existing_host} -> ${HOST}); recreating"
+  api DELETE "https://monitoring.googleapis.com/v3/${existing}" >/dev/null || true
+  existing=""
+fi
 if [[ -n "$existing" ]]; then
   echo "uptime check exists: ${existing}"
 else

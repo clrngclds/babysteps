@@ -19,5 +19,5 @@ The scripts expect Chrome at `/usr/bin/google-chrome`; edit `executablePath` if 
 control, cache contents, the visit ping (expects 204), CSP violations, third-party requests, and
 Today / Milestones / activity detail with the network off. It writes screenshots to the given folder:
 ```sh
-node live.mjs https://web-312918712586.asia-southeast1.run.app screenshots
+node live.mjs https://babysteps-312918712586.asia-southeast1.run.app screenshots
 ```
