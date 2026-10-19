@@ -1,0 +1,31 @@
+{
+  "name": "babysteps",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "catalog": "tsx scripts/build-catalog.ts",
+    "predev": "npm run catalog",
+    "dev": "next dev",
+    "prebuild": "npm run catalog",
+    "build": "next build && node scripts/postbuild-sw.mjs",
+    "serve": "npx serve out -l 3000",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.4",
+    "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.6",
+    "tsx": "^4.20.3",
+    "typescript": "^5.9.3",
+    "vitest": "^5.0.5"
+  },
+  "dependencies": {
+    "idb-keyval": "^6.3.0",
+    "minisearch": "^7.2.0",
+    "next": "^15.5.28",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
+  }
+}
