@@ -109,7 +109,8 @@ api POST "${BQ}/datasets/${DATASET}/tables" "{\"tableReference\":{\"projectId\":
 ensure_week_first() {
   local t etag body
   t=$(api GET "${BQ}/datasets/${DATASET}/tables/${TABLE}")
-  [[ "$HTTP_CODE" == 200 ]] || { echo "table read failed ($HTTP_CODE)"; return 1; }
+  # (api runs in a subshell here, so HTTP_CODE isn't set: check the body instead)
+  jq -e '.schema.fields' <<<"$t" >/dev/null || { echo "table read failed: $(jq -r '.error.message // .' <<<"$t")"; return 1; }
   if jq -e '.schema.fields[] | select(.name == "week_first")' <<<"$t" >/dev/null; then
     echo "column week_first exists"; return 0
   fi

@@ -68,7 +68,8 @@ VISITS_DATASET="${VISITS_DATASET:-babysteps}"
 grant_dataset_reader() {
   local ds etag body
   ds=$(api GET "${BQ}/datasets/${VISITS_DATASET}")
-  [[ "$HTTP_CODE" == 200 ]] || { echo "dataset ${VISITS_DATASET} read failed (${HTTP_CODE})"; return 1; }
+  # (api runs in a subshell here, so HTTP_CODE isn't set: check the body instead)
+  jq -e '.access' <<<"$ds" >/dev/null || { echo "dataset ${VISITS_DATASET} read failed: $(jq -r '.error.message // .' <<<"$ds")"; return 1; }
   if jq -e --arg sa "$PIPE_SA" '.access[] | select(.userByEmail == $sa and (.role == "READER" or .role == "roles/bigquery.dataViewer"))' <<<"$ds" >/dev/null; then
     echo "dataset ${VISITS_DATASET}: dataViewer grant exists"; return 0
   fi
