@@ -13,7 +13,7 @@ import { noteNavigation } from '@/lib/nav';
 const SearchOverlay = dynamic(() => import('./SearchOverlay'), { ssr: false });
 
 const NAV = [
-  { href: '/', label: 'Today', ico: '☀️', match: (p: string) => p === '/' || p.startsWith('/activity') },
+  { href: '/', label: 'Playtime', ico: '☀️', match: (p: string) => p === '/' || p.startsWith('/activity') },
   { href: '/milestones/', label: 'Milestones', ico: '🌱', match: (p: string) => p.startsWith('/milestone') },
   { href: '/for-you/', label: 'For You', ico: '♥', match: (p: string) => p.startsWith('/for-you') },
   { href: '/outings/', label: 'Outings', ico: '🧺', match: (p: string) => p.startsWith('/outing') },

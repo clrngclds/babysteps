@@ -13,10 +13,6 @@ export function Disclaimer() {
         </span>
       </p>
       <p style={{ marginTop: 8, paddingLeft: 26 }}>If your child loses skills they once had, see a doctor.</p>
-      <p style={{ marginTop: 8, paddingLeft: 26 }}>
-        Milestones from the CDC &ldquo;Learn the Signs. Act Early.&rdquo; checklists (2022).{' '}
-        <a href="https://www.cdc.gov/act-early/milestones/index.html" target="_blank" rel="noopener noreferrer">Source</a>
-      </p>
     </aside>
   );
 }

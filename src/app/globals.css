@@ -356,3 +356,39 @@ a.ms:hover span:last-child { text-decoration: underline; }
 .wide-only, .wide-only-inline { display: none; }
 @media (min-width: 768px) { .wide-only { display: block; } }
 @media (min-width: 1200px) { .wide-only-inline { display: inline; } }
+
+/* Milestones page v0.4: "Working on now" + "Coming next" (SDD BMi-1) */
+.mpage { max-width: 720px; }
+.mgrid { display: grid; gap: 14px; }
+.mhead { font-family: var(--font-head); font-weight: 700; font-size: 20px; margin: 2px 0 6px; }
+.mkicker { display: block; font-family: var(--font-body); font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--sage-strong); margin-bottom: 2px; }
+.mnow { padding: 16px 16px 6px; }
+.mnext { border: 1.5px dashed var(--border); border-radius: var(--radius); padding: 16px; background: transparent; }
+.mnext .mkicker { color: var(--ink-muted); }
+.mnext .mhead { font-size: 18px; color: var(--ink); }
+.agrp { margin-top: 12px; }
+.agrp:first-of-type { margin-top: 8px; }
+.ahead { display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 700; margin: 0 0 2px; }
+.ahead .dot { width: 26px; height: 26px; font-size: 13px; }
+.acount { margin-left: auto; font-weight: 500; font-size: 12px; color: var(--ink-muted); }
+.mrow2 { display: flex; align-items: center; gap: 8px; border-top: var(--line); }
+.agrp .mrow2:first-of-type { border-top: 0; }
+.mrow2 .mlink { flex: 1; display: flex; align-items: center; gap: 8px; min-height: 48px; color: var(--ink); padding: 4px 0 4px 36px; }
+.mrow2 .mlink:hover { text-decoration: none; }
+.mrow2 .chev { margin-left: auto; color: var(--ink-muted); }
+.mrow2.seen .mlink > span:first-child { color: var(--ink-muted); }
+.mnext .mrow2 .mlink { color: var(--ink-muted); }
+.seenbtn { flex: none; width: 48px; height: 48px; display: grid; place-items: center; border: 0; background: transparent; cursor: pointer; padding: 0; }
+.seenbtn > span { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; font-size: 14px; border: 1.5px solid var(--border); color: transparent; background: var(--surface); }
+.seenbtn:hover > span { color: var(--ink-muted); }
+.seenbtn.on > span { background: var(--sage-strong); border-color: var(--sage-strong); color: #fff; }
+.textbtn { background: none; border: 0; padding: 12px 4px; min-height: 48px; font: inherit; font-weight: 700; font-size: 14px; color: var(--sage-strong); cursor: pointer; }
+.mmore { display: flex; gap: 18px; flex-wrap: wrap; margin: 6px 2px 0; }
+.mearlier { margin-top: 4px; }
+.mearlier .ahead { color: var(--ink-muted); }
+.backto { margin: -6px 0 6px; }
+.cpchips { display: flex; flex-wrap: wrap; gap: 8px; padding-bottom: 8px; }
+@media (min-width: 1200px) {
+  .mpage { max-width: 1100px; }
+  .mgrid { grid-template-columns: 1.15fr 1fr; align-items: start; }
+}

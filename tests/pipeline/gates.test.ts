@@ -409,7 +409,26 @@ describe('G7 events', () => {
   });
   it('venues without dates pass', () => {
     const venue = outings.find((o) => o.id === 'sg-venue-jacob-ballas')!;
-    expect(g7Events(outCandidate(strip(venue) as OutingDraft), { ...OUT_PAGE, text: 'A garden.' }, TODAY)).toEqual([]);
+    expect(g7Events(outCandidate(strip(venue) as OutingDraft), { ...OUT_PAGE, text: 'A family-friendly garden for young children.' }, TODAY)).toEqual([]);
+  });
+
+  it('v0.4: a new outing whose page shows no under-3 suitability fails', () => {
+    const venue = outings.find((o) => o.id === 'sg-venue-jacob-ballas')!;
+    const f = g7Events(outCandidate(strip(venue) as OutingDraft), { ...OUT_PAGE, text: 'A garden.' }, TODAY);
+    expect(f.map((x) => x.reason)).toContain("page doesn't show it suits under-3s");
+  });
+
+  it('v0.4: venue updates for existing venues are exempt from the suitability rule', () => {
+    const venue = outings.find((o) => o.id === 'sg-venue-jacob-ballas')!;
+    const c = { ...outCandidate(strip(venue) as OutingDraft), purpose: 'venue-update' as const };
+    expect(g7Events(c, { ...OUT_PAGE, text: 'A garden.' }, TODAY)).toEqual([]);
+  });
+
+  it('v0.4: thrill events fail even with toddler wording on the page', () => {
+    const venue = outings.find((o) => o.id === 'sg-venue-jacob-ballas')!;
+    const c = outCandidate({ ...(strip(venue) as OutingDraft), name: 'TRICK or THRILLS' });
+    const f = g7Events(c, { ...OUT_PAGE, text: 'Fun for toddlers and families.' }, TODAY);
+    expect(f.map((x) => x.reason)).toContain('not for young children (thrill event)');
   });
 });
 

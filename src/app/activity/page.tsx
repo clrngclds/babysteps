@@ -29,8 +29,8 @@ function ActivityDetail() {
   if (!a) {
     return (
       <>
-        <PageHeader back={{ href: '/', label: 'Today' }} />
-        <p className="empty">This activity isn&apos;t available any more. <Link href="/">Back to Today</Link></p>
+        <PageHeader back={{ href: '/', label: 'Playtime' }} />
+        <p className="empty">This activity isn&apos;t available any more. <Link href="/">Back to Playtime</Link></p>
       </>
     );
   }
@@ -39,7 +39,7 @@ function ActivityDetail() {
 
   return (
     <div className="narrow">
-      <PageHeader back={{ href: '/', label: 'Today' }} />
+      <PageHeader back={{ href: '/', label: 'Playtime' }} />
       <div className={`dhero c-${CAT_CLASS[a.category]}`} aria-hidden="true">{activityEmoji(a)}</div>
       <div className="dtitle">
         <h1>{a.title}</h1>

@@ -441,13 +441,36 @@ rules:
         - Fill a treasure basket with a wooden spoon and a whisk; supervise and choose items larger than a toilet roll tube.
         - Collect smooth stones on a walk and sort them by colour; supervise and use stones too big to swallow.
 
+  # Added 2026-10-19 after Doralyn's review: for babies and young toddlers, small sensory
+  # fillers are blocked outright. From 24 months they are allowed with a supervision note
+  # (next rule).
+  - id: sensory-fillers-under-24-months
+    title: Dried beans, rice, pasta and pom poms before 24 months
+    why: Dried beans, lentils, uncooked rice and pasta, corn kernels and pom poms are choking, inhaling and nose/ear hazards. Under 24 months they are not used at all, even with supervision.
+    action: block
+    applies_to: [activity]
+    below_month: 24
+    fields: [title, summary, how_to, materials]
+    match: &fillers [dried bean, dry bean, bean, uncooked pasta, dry pasta, dried pasta, uncooked rice, dry rice, dried rice, coloured rice, colored rice, lentil, chickpea, split pea, corn kernel, pom pom, pompom]
+    # Cooked beans as food, bean bags and the word inside other names are fine.
+    unless: &filler_ok [green bean, string bean, french bean, runner bean, baked bean, broad bean, bean bag, beanbag, cooked, steamed, mashed, puree, purée]
+    examples:
+      blocked:
+        - Halloween sensory bin with beans and pom poms.
+        - Hide toys in a tray of dried rice for them to find; supervise closely.
+        - Glue pom-poms onto a paper pumpkin.
+      allowed:
+        - Offer soft steamed green beans cut into small pieces.
+        - Toss a bean bag into a laundry basket.
+
   - id: sensory-fillers-need-supervision
-    title: Dried beans, rice and pasta need supervision
-    why: Dried beans, lentils, uncooked rice and pasta are easy to swallow, inhale or push into a nose or ear.
+    title: Dried beans, rice, pasta and pom poms need supervision (24 months and up)
+    why: Dried beans, lentils, uncooked rice and pasta, corn kernels and pom poms are easy to swallow, inhale or push into a nose or ear. Under 24 months the rule above blocks them; from 24 months they need a supervision note.
     action: require_note
     applies_to: [activity]
     fields: [title, summary, how_to, materials]
-    match: [dried bean, dry bean, uncooked pasta, dry pasta, dried pasta, uncooked rice, dry rice, dried rice, coloured rice, colored rice, lentil, chickpea, split pea, corn kernel]
+    match: *fillers
+    unless: *filler_ok
     require_any: *supervision
     examples:
       blocked:

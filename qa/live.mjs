@@ -1,4 +1,4 @@
-// Live-site check: onboarding, Today, service worker, visit ping, CSP, third-party requests, offline.
+// Live-site check: onboarding, Playtime, service worker, visit ping, CSP, third-party requests, offline.
 import puppeteer from 'puppeteer-core';
 import { mkdirSync } from 'node:fs';
 

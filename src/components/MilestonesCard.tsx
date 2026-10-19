@@ -36,7 +36,7 @@ export function MilestonesCard({ month, checkpoint, milestones }: { month: numbe
           ))}
         </div>
       ))}
-      {!list.length && <p className="muted">No CDC checkpoint for this month.</p>}
+      {!list.length && <p className="muted">No milestones listed for this month.</p>}
     </section>
   );
 }

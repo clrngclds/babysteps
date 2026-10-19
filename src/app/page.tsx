@@ -16,7 +16,7 @@ import { birthLabel, monthsLabel, todaySG } from '@/lib/age';
 import { filterOutings, dateLabel } from '@/lib/outings';
 import { outingEmoji } from '@/lib/emoji';
 
-export default function TodayPage() {
+export default function PlaytimePage() {
   const { age, birth, viewMonth, setViewMonth, category, setCategory, state, setFilters, getMonth, catalog } = useApp();
   const ageM = age?.months ?? 0;
   const month = viewMonth ?? ageM;

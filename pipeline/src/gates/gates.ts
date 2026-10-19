@@ -425,6 +425,14 @@ export function g7Events(c: Candidate, page: PageContext, today: string, sgHosts
   if (!(typeof min === 'number' && typeof max === 'number' && min <= 36 && max >= 0 && min <= max))
     fails.push(fail('G7', `age range ${min}-${max} months does not overlap 0-36`));
 
+  // v0.4 (approved 2026-10-19): thrill / horror / adult events are never published.
+  const adult = findAdultOrThrill(`${o.name ?? ''} ${o.summary ?? ''}`, page?.text ?? '');
+  if (adult) fails.push(fail('G7', `not for young children (${adult})`));
+  // v0.4: new outings must show on the page that they suit under-3s or young families.
+  // Updates to venues already in the catalog (purpose venue-update) are exempt.
+  if (c.purpose !== 'venue-update' && !showsUnder3Suitability(page?.text ?? '', min, max))
+    fails.push(fail('G7', "page doesn't show it suits under-3s"));
+
   if (!o.start_date) {
     if (o.type === 'event') fails.push(fail('G7', 'no dates found yet', true));
     return fails;
@@ -434,6 +442,45 @@ export function g7Events(c: Candidate, page: PageContext, today: string, sgHosts
   const dates = findDatesOnPage(page?.text ?? '', today);
   o.dates_confirmed = dates.includes(o.start_date) && (!o.end_date || dates.includes(o.end_date));
   return fails;
+}
+
+
+/* v0.4 outing suitability helpers (SDD §8.4 G7, approved 2026-10-19) ------------------------------ */
+
+const UNDER3_PATTERNS: RegExp[] = [
+  /\bbab(y|ies)\b/, /\binfants?\b/, /\btoddlers?\b/, /\btots?\b/, /\bnewborns?\b/,
+  /\bunder[- ]?(2|3|three|two)s?\b/, /\bages? 0\b/, /\b0 ?(-|to|–) ?[1-9]\b/, /\b(1|2) ?(-|to|–) ?[2-6] ?(years?|yrs?|y\/o)\b/,
+  /\b\d{1,2} ?(-|to|–) ?\d{1,2} months\b/,
+  /\bpre-?school(ers)?\b/, /\blittle ones\b/, /\byoung children\b/, /\bkids under\b/,
+  /\bfamil(y|ies) with young children\b/, /\bfamily[- ]friendly\b/, /\b(stroller|pram|buggy)[- ](friendly|accessible)\b/,
+  /\bnursing (room|area)\b/, /\bbaby[- ]?changing\b/, /\bdiaper[- ]changing\b/, /\blapsit\b/, /\bstorytime\b/,
+];
+
+/** True if the page text shows the outing suits under-3s or young families, or states an age range overlapping 0-36 months. */
+export function showsUnder3Suitability(pageText: string, _min?: number, _max?: number): boolean {
+  const t = normalizeText(pageText);
+  return UNDER3_PATTERNS.some((re) => re.test(t));
+}
+
+/** Theme words: checked in the outing's own name and summary only (venue sites use them in menus). */
+const THEME_PATTERNS: [RegExp, string][] = [
+  [/\bhorror\b/, 'horror'], [/\bhaunted\b/, 'haunted'], [/\bscare (zone|maze|house|trail)s?\b/, 'scare attraction'],
+  [/\bthrill (ride|seeker)s?\b/, 'thrill ride'], [/\bthrills?\b/, 'thrill event'],
+  [/\bbar crawl\b/, 'bar crawl'], [/\bhalloween horror nights\b/, 'Halloween Horror Nights'],
+];
+/** Explicit age restrictions: checked in the name, summary and page text. */
+const RESTRICTION_PATTERNS: [RegExp, string][] = [
+  [/\b(18|21) ?\+/, '18+'], [/\br ?18\b/, 'R18'], [/\bnc ?16\b/, 'NC16'], [/\bm ?18\b/, 'M18'],
+  [/\badults? only\b/, 'adults only'], [/\bnot suitable for (young )?children\b/, 'not suitable for children'],
+];
+
+/** Returns a short reason if the outing is thrill/horror/adult, else null. */
+export function findAdultOrThrill(nameAndSummary: string, pageText = ''): string | null {
+  const own = normalizeText(nameAndSummary);
+  for (const [re, why] of THEME_PATTERNS) if (re.test(own)) return why;
+  const all = `${own} ${normalizeText(pageText)}`;
+  for (const [re, why] of RESTRICTION_PATTERNS) if (re.test(all)) return why;
+  return null;
 }
 
 /* ---------------------------------------------------------------------------------------------- */
