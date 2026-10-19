@@ -9,9 +9,11 @@
     "dev": "next dev",
     "prebuild": "npm run catalog",
     "build": "next build && node scripts/postbuild-sw.mjs",
-    "serve": "python3 -m http.server 3000 --directory out",
+    "serve": "PORT=3000 node server/server.mjs",
     "test": "vitest run",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "start": "node server/server.mjs",
+    "precompress": "node server/precompress.mjs"
   },
   "devDependencies": {
     "@types/node": "^22.20.4",
