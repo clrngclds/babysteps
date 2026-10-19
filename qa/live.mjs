@@ -72,6 +72,11 @@ await page.goto(base + actHref, { waitUntil: 'networkidle0' });
 await sleep(800);
 await shot('05-activity-detail');
 
+await page.goto(base + '/settings/', { waitUntil: 'networkidle0' });
+await sleep(800);
+results.settingsPrivacy = await page.$eval('section.card p.muted', (e) => e.textContent.trim()).catch(() => null);
+await shot('09-settings');
+
 // 5. Offline after first load
 await page.setOfflineMode(true);
 const offline = {};
