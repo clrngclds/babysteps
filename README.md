@@ -45,8 +45,8 @@ Dockerfile               multi-stage image (Node 22 build, slim non-root runtime
 
 ## Privacy
 Birth month/year, saves, swipes, filters and "tried it" feedback live in one IndexedDB record
-(`bd-state-v1`). The only data sent is the once-a-day visit ping `{day_first, month_first}` to
+(`bd-state-v1`). The only data sent is the once-a-day visit ping `{day_first, month_first, week_first}` to
 same-origin `/api/visit` (SDD §9.1). It is enabled in production builds by `.env.production`
 (`NEXT_PUBLIC_VISIT_URL=/api/visit`) and off in `next dev`. The server stores one BigQuery row
-(Singapore date + the two flags) and no IP, user agent or ID; request logs for that path are
+(Singapore date + the flags) and no IP, user agent or ID; request logs for that path are
 excluded from Cloud Logging. Fonts are self-hosted. No third-party requests.

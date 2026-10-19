@@ -74,10 +74,12 @@ Cloud Logging ─► log-based alert policies ─► email channel (doralyn@goog
 | Cloud Run Job | `babysteps-monthly` | args `monthly`, 1 vCPU, 512 MiB, timeout 1 h, 0 retries |
 | Cloud Scheduler | `babysteps-weekly`, `babysteps-daily`, `babysteps-monthly` (asia-southeast1) | HTTP POST to the Cloud Run Admin API `jobs/{job}:run`, OAuth as `babysteps-scheduler` |
 | Container image | `asia-southeast1-docker.pkg.dev/dc-test2-489503/babysteps/pipeline:<sha>-<time>` | In the existing `babysteps` repo (keep-latest-5 cleanup policy) |
-| Alert policy | babysteps pipeline: weekly digest | Log match `jsonPayload.event="weekly_digest"`, label extractors, email |
+| Alert policy | babysteps pipeline: weekly digest | Log match `jsonPayload.event="weekly_digest"`, label extractors, email. Text and extractors: `pipeline/alerts/` |
 | Alert policy | babysteps pipeline: job failed 2 runs in a row | Log match `pipeline_job_failed_repeatedly` |
 | Alert policy | babysteps pipeline: source failing 3 weeks | Log match `source_failing` |
 | Alert policy | babysteps pipeline: publish failed or rolled back | Log match `catalog_publish_failed` |
+| Uptime check | `babysteps web /health` | `https://web-312918712586.asia-southeast1.run.app/health`, every 5 min from ASIA_PACIFIC (incl. Singapore), USA_OREGON, EUROPE; created 2026-10-19 |
+| Alert policy | babysteps web: /health down | Uptime check failing from 2+ regions for 10 min, email |
 | Alert policy | babysteps web: 5xx responses | `run.googleapis.com/request_count`, service `web`, 5xx > 5 in 5 min |
 | Bucket prefixes | `content/`, `state/` in `gs://dc-test2-489503-babysteps-content` | `catalog/` is written only through publish/rollback |
 
@@ -90,6 +92,8 @@ Build-time resources reused (not changed): Cloud Build with `babysteps-build@` a
 | `babysteps-pipeline@` | `roles/storage.objectAdmin` | bucket `dc-test2-489503-babysteps-content` only |
 | `babysteps-pipeline@` | `roles/aiplatform.user` | project |
 | `babysteps-pipeline@` | `roles/logging.logWriter` | project |
+| `babysteps-pipeline@` | `roles/bigquery.dataViewer` (READER) | dataset `babysteps` only (digest visitor numbers; added 2026-10-19) |
+| `babysteps-pipeline@` | `roles/bigquery.jobUser` | project (to run the read-only visitor query; added 2026-10-19) |
 | `babysteps-scheduler@` | `roles/run.invoker` | each of the 3 jobs (job-level policy) |
 
 No service account keys. Tokens come from the metadata server on Cloud Run, or from `gcloud auth print-access-token` locally. No public buckets and no `allUsers` grants.
@@ -159,8 +163,15 @@ Rollback only repoints `catalog/latest.json`, and refuses incomplete version fol
 ## Visibility
 
 - **Weekly digest.** It goes by email using Google Cloud only:
-  - The weekly job writes one structured log entry: `{"event":"weekly_digest", week_ending, auto_publish, published, staged, retired, quarantined, failures, catalog_version, est_cost_usd, summary}`. The summary is ≤900 characters and lists titles, retirements and failures.
-  - A log-based alert policy matches the entry, pulls each value out with label extractors, and puts them in the email via `${log.extracted_label.*}`.
+  - The weekly job writes one structured log entry: `{"event":"weekly_digest", week_ending, auto_publish, published, staged, retired, quarantined, failures, catalog_version, est_cost_usd, summary, visitors_7d, visitor_days_7d, visitors_prev_7d, visitor_days_prev_7d, visitors_month, visitors_complete, visitors_past_text, visitors_prev_text, visitors_month_text}`. The summary is ≤900 characters and lists titles, retirements and failures.
+  - A log-based alert policy matches the entry, pulls each value out with label extractors, and puts them in the email via `${log.extracted_label.*}`. The email text is `pipeline/alerts/weekly_digest.md` and the extractors are `pipeline/alerts/weekly_digest_labels.json`; a test checks they match the log entry. The email starts with a "What this email is" line.
+  - **Visitor numbers** (anonymous counts from `babysteps.visits`, SDD §9.1; Singapore dates). The query is read-only and runs as `babysteps-pipeline` (`pipeline/src/gcp/bigquery.ts`):
+    - *Past 7 days* = the 7 complete days before the run (on the Monday run: the previous Mon–Sun ISO week). *Visitors* = `week_first=true` rows.
+    - While the weekly count is partial, the line also shows *visitor-days* (`day_first=true` rows) and labels both. Partial means: weekly counting started inside the window (first `week_first` data: 2026-10-19), or the window has pings from old clients without `week_first` (accepted until 2026-11-02).
+    - *Previous 7 days*: the same numbers for the 7 days before that.
+    - *This month* = `month_first=true` rows from the 1st (SGT) to the run date.
+    - If the query fails, the job still finishes. The digest then says "Visitor counts unavailable (…)" and lists it under failures.
+    - To check by hand: `gcloud run jobs execute babysteps-daily --region asia-southeast1 --args=visitors --wait` (or `npx tsx pipeline/src/cli.ts visitors 2026-10-26` locally).
   - Notification rate limit 5 min, auto-close 30 min, notify on open only.
   - Full numbers are in `state/runs/`.
 - **Job fails 2 runs in a row.** Each job records its status in `state/job_health.json`.
@@ -169,7 +180,7 @@ Rollback only repoints `catalog/latest.json`, and refuses incomplete version fol
 - **Source errors 3 weeks in a row** (`state/source_health.json`) log `source_failing`, which emails.
 - **Publish failed or rolled back** logs `catalog_publish_failed`, which emails.
 - **web 5xx:** more than 5 server errors in 5 minutes sends an email.
-- **Uptime check on `/health`:** not created, needs a role (see "needs approval").
+- **Uptime check on `/health`:** every 5 min from Asia Pacific (Singapore), Oregon and Europe. If it fails from 2+ regions for 10 minutes, it emails.
 
 ## Dry-run results (2026-10-19)
 
@@ -189,7 +200,7 @@ Full report: `pipeline/reports/dry-run-2026-10-19.md`. The weekly job was starte
 
 ## Tests
 
-`npx vitest run`: **385 tests in 13 files, all passing.** The original 107 pass unchanged and 278 are new. `npx tsc --noEmit` is clean.
+`npx vitest run`: **441 tests in 14 files, all passing** (385 from Phase 3 plus 56 for the 2026-10-19 follow-ups). `npx tsc --noEmit` is clean.
 
 | File | Covers |
 |---|---|
@@ -198,6 +209,7 @@ Full report: `pipeline/reports/dry-run-2026-10-19.md`. The weekly job was starte
 | `tests/pipeline/gates.test.ts`, `safety.test.ts` | Every gate: grounding (quotes, keywords, copy runs), allow-list, every safety rule using its own YAML examples, honey at 11/12 months, dedupe ±2 months, events, quotas (11→10, 6→5 per source, 31→30, Montessori priority), G9 |
 | `tests/pipeline/publish.test.ts` | Migration (order, idempotence, validation), merge / ids, publish to a mock bucket (folder before pointer, health-check rollback, stale site, G9 refusal, half-written versions, generation preconditions), rollback CLI logic, job health, digest |
 | `tests/pipeline/jobs.test.ts` | End-to-end weekly and daily jobs with a fake web, fake Gemini and fake site: staging vs publishing, quarantine, 2-week link retirement, expiry publish, maintenance helpers |
+| `tests/pipeline/followups.test.ts` | Digest visitor numbers: BigQuery client, windows, SQL, partial/complete labelling, errors; email template ↔ extractors ↔ log entry; intro line; deploy-script grants and uptime check; Montessori Academy disabled |
 | `tests/pipeline/integration-fixes.test.ts`, `tests/lifecycle-fields.test.ts` | Dry-run fixes, publish-staged, staged merge; web app tolerance of the new fields |
 
 ## Estimated monthly cost
@@ -216,19 +228,10 @@ Full report: `pipeline/reports/dry-run-2026-10-19.md`. The weekly job was starte
 
 ## Needs approval
 
-1. **Uptime check on `/health`.** The human account lacks `roles/monitoring.uptimeCheckConfigEditor` (the API returned 403). If approved:
-   ```sh
-   gcloud projects add-iam-policy-binding dc-test2-489503 \
-     --member user:admin@doralyn.altostrat.com --role roles/monitoring.uptimeCheckConfigEditor
-   pipeline/deploy.sh   # creates the "babysteps web /health" check (3 regions, every 5 min) and its alert policy
-   ```
-2. **Redeploy the `web` service** to ship the web-app changes. I didn't redeploy it because I didn't create it.
-   - What changes: `isNew` ignores seed content, and retired outings are filtered on load.
-   - Without it: once v3 is published, seed activities show "New this week" until 2026-10-25 (7 days after `added_at` 2026-10-18). After that date there's no visible effect. Retired outings are already dropped by the catalog build.
-   - Command: `deploy/deploy.sh` (the Phase 2 script; it never overwrites a published catalog version).
-3. **Review `pipeline/safety_rules.yaml`, then switch on publishing:** `pipeline/auto-publish.sh true`. Optionally publish today's staged candidates first with `publish-staged 2026-10-19` (see "How to").
-4. **Source decisions:**
-   - Montessori Academy returns 403 to Cloud Run (it works from a desktop IP), so the source-failing alert will fire after 3 weeks. Disable it or accept the alert.
+Done on 2026-10-19 (approved follow-ups): uptime check created, `web` redeployed, Montessori Academy disabled, digest visitor numbers. Still open:
+1. **Review `pipeline/safety_rules.yaml`, then switch on publishing:** `pipeline/auto-publish.sh true`. Optionally publish today's staged candidates first with `publish-staged 2026-10-19` (see "How to"). Not approved yet: AUTO_PUBLISH stays false.
+2. **Source decisions:**
+   - Montessori Academy: **disabled 2026-10-19** (403 to Cloud Run), so its source-failing alert won't fire. Re-enable in `sources.yaml` if it stops blocking Cloud Run.
    - How We Montessori, Science Centre KidsSTOP and Children's Museum are disabled (TLS/Cloudflare, AWS bot challenge, 403).
    - `gov.sg` is in `official_domains`, so tier-2 finds may resolve to any government site. G3 accepts `official_domains` as tier 1 for those pages.
 

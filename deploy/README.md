@@ -22,7 +22,7 @@ re-run at any time. `PROJECT`, `REGION` and `SERVICE` can be overridden through 
 | Bucket | `gs://dc-test2-489503-babysteps-build` | Cloud Build source staging; objects deleted after 7 days |
 | Service account | `babysteps-web@` | Cloud Run runtime identity |
 | Service account | `babysteps-build@` | Cloud Build identity for image builds |
-| BigQuery | dataset `babysteps` (asia-southeast1), table `visits` | `date DATE, day_first BOOL, month_first BOOL`, day-partitioned on `date` |
+| BigQuery | dataset `babysteps` (asia-southeast1), table `visits` | `date DATE, day_first BOOL, month_first BOOL, week_first BOOL NULLABLE`, day-partitioned on `date`. `week_first` was added in place on 2026-10-19 (the script adds it if missing); older rows have NULL |
 | Cloud Run | `web` (asia-southeast1) | 1 vCPU, 512Mi, concurrency 80, 0–5 instances, CPU only during requests |
 | Log exclusion | `_Default` sink, `babysteps-visit-requests` | Drops Cloud Run request logs for `/api/visit` on `web` |
 
@@ -51,9 +51,14 @@ re-run at any time. `PROJECT`, `REGION` and `SERVICE` can be overridden through 
 ## Endpoints and headers
 - `/health`: liveness. `/healthz` is also handled, but run.app reserves it (Cloud Run known issue:
   paths ending in "z" return a Google 404), so use `/health` against the live URL.
-- `POST /api/visit`: `application/json`, body exactly `{"day_first": bool, "month_first": bool}`,
+- `POST /api/visit`: `application/json`, body exactly `{"day_first": bool, "month_first": bool, "week_first": bool}`,
   max 256 bytes, same origin if `Origin` is sent. 204 on success; 400/403/405/413/415 otherwise;
-  503 if BigQuery rejects the insert.
+  503 if BigQuery rejects the insert. The old body `{"day_first", "month_first"}` (clients cached
+  before 2026-10-19) is accepted until 2026-11-02 SGT (`LEGACY_VISIT_BODY_UNTIL` in `server/lib.mjs`)
+  and stored with `week_first` NULL; after that it gets 400. The row is the Singapore date plus the
+  flags. No IP, user agent or ID is stored.
+- The client sets `week_first` on the first visit in an ISO week (Monday–Sunday, Singapore dates).
+  It is derived from the locally stored date of the last ping, like `month_first`, so there is still at most one ping a day.
 - Cache-Control: `/_next/static/*` and `/catalog/v{N}/*` 1 year immutable; `latest.json`, `sw.js`,
   HTML, RSC `.txt` and the manifest `no-cache`; icons 30 days.
 - CSP is same-origin only. Each HTML page carries sha256 hashes of its inline Next bootstrap scripts
@@ -67,7 +72,12 @@ FROM `dc-test2-489503.babysteps.visits` GROUP BY date ORDER BY date DESC;
 -- monthly visitors
 SELECT DATE_TRUNC(date, MONTH) AS month, COUNTIF(month_first) AS monthly_visitors
 FROM `dc-test2-489503.babysteps.visits` GROUP BY month ORDER BY month DESC;
+-- weekly visitors (ISO weeks; complete from the week of 2026-10-26)
+SELECT DATE_TRUNC(date, ISOWEEK) AS week, COUNTIF(week_first IS TRUE) AS weekly_visitors,
+  COUNTIF(week_first IS NULL) AS pings_without_week_flag
+FROM `dc-test2-489503.babysteps.visits` GROUP BY week ORDER BY week DESC;
 ```
+The weekly pipeline digest also emails these numbers (see `pipeline/PIPELINE_NOTES.md`, Visibility).
 
 ## Notes
 - The `bq` CLI fails on this workstation (mTLS client-certificate bug), so the script calls the
