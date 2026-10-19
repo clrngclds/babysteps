@@ -1,0 +1,539 @@
+# Content sources for the weekly content-watch job (SDD §8.2).
+#
+# HOW TO ADD A SOURCE
+#   1. Copy an existing entry of the same kind (a blog feed, a sitemap, or a "what's on" page)
+#      and paste it at the end of the list.
+#   2. Give it a new unique `id` (lowercase letters, digits and dashes) and a `name`.
+#   3. Set `urls` to the feed / sitemap / listing page and `domains` to the site's hostname(s).
+#   4. Optional filters: `include` / `exclude` are regular expressions (case-insensitive) tested
+#      against each found URL;
+#      `keywords` must appear in the item title, summary or URL (case-insensitive).
+#   5. Leave a line in `notes` saying what you checked and when.
+#   The pipeline validates this file on every run; a typo stops the run with a clear message.
+#
+# FIELDS
+#   tier       1 = official or organiser site (can be published); 2 = aggregator (discovery only:
+#              the pipeline follows the article's link to the official page and uses that instead).
+#   kind       activity | outing
+#   detection  feed     = RSS or Atom; new entries are new items
+#              sitemap  = sitemap.xml (or sitemap index); new URLs (or changed lastmod) are new items
+#              listing  = an HTML "what's on" page; new links on it are new items
+#   child_sitemaps   for a sitemap index: regexes picking which child sitemaps to read
+#   track_lastmod    sitemap only; false when a site re-stamps every lastmod in bulk
+#   philosophy       default tags for activity sources: montessori | lovevery | reggio_emilia
+#   max_items_per_run  items sent to Gemini per run (default 15)
+#   frequency  weekly (default) or monthly (read only on the monthly run)
+#   enabled    false = skipped (say why in notes)
+#
+# Verification: every URL below was requested on 2026-10-18/19 with a desktop Chrome user agent,
+# robots.txt honoured and at least 2 s between requests to the same host.
+
+version: 1
+
+# Official sites (government, venues, organisers) that tier-2 articles may link to. An item
+# discovered on an aggregator is only used if it resolves to one of these or to a tier-1 source.
+official_domains:
+  - gov.sg               # any Singapore government site (nlb.gov.sg, nparks.gov.sg, onepa.gov.sg, pa.gov.sg, ...)
+  - go.gov.sg            # official short links; they redirect to gov.sg pages
+  - nlb.gov.sg
+  - nlb.libcal.com
+  - nparks.gov.sg
+  - onepa.gov.sg
+  - nhb.gov.sg
+  - roots.gov.sg
+  - heritage.sg
+  - childrensmuseum.sg
+  - esplanade.com
+  - mandai.com
+  - nationalgallery.sg
+  - sentosa.com.sg
+  - rwsentosa.com
+  - gardensbythebay.com.sg
+  - science.edu.sg
+  - jewelchangiairport.com
+  - changiairport.com
+  - marinabaysands.com
+  - visitsingapore.com
+  - riverhongbao.sg
+  - chinatownfestivals.sg
+  - orchardroad.org
+  - christmaswonderland.sg
+  - chingay.gov.sg
+  - nightfestival.gov.sg
+  - sso.org.sg
+  - srt.com.sg
+  - artshouselimited.sg
+  - activesgcircle.gov.sg
+
+sources:
+  # ------------------------------------------------------------------------------------------
+  # Activity sources (SDD §8.2.1)
+  # ------------------------------------------------------------------------------------------
+
+  - id: lovevery-blog
+    name: Lovevery blog
+    tier: 1
+    kind: activity
+    detection: feed
+    urls:
+      - https://blog.lovevery.com/feed/
+    domains: [blog.lovevery.com, lovevery.com]
+    philosophy: [lovevery]
+    max_items_per_run: 15
+    notes: >-
+      2026-10-19: RSS 200, 10 items; newest 3 posts dated 2026-09-29. Many posts are product
+      related and yield no activity. Sitemap available for backfill (not used weekly).
+
+  - id: kavanaugh-report
+    name: The Kavanaugh Report
+    tier: 1
+    kind: activity
+    detection: feed
+    urls:
+      - https://www.thekavanaughreport.com/feeds/posts/default
+    domains: [thekavanaughreport.com]
+    philosophy: [montessori]
+    notes: >-
+      2026-10-19: Atom 200 (Blogger redirects to feeds.feedburner.com/blogspot/IkdCi), 25 entries.
+      Newest post 2025-06-09, so expect few or no new items. Entry links use http://www.
+
+  - id: montessori-notebook
+    name: The Montessori Notebook
+    tier: 1
+    kind: activity
+    detection: sitemap
+    urls:
+      - https://themontessorinotebook.com/sitemap_index.xml
+    domains: [themontessorinotebook.com]
+    child_sitemaps: ['/post-sitemap\d*\.xml']
+    exclude: ['/blog/?$', '/category/', '/page/\d+']
+    philosophy: [montessori]
+    notes: >-
+      2026-10-19: RSS returns 410, so sitemap diff. robots.txt points to sitemap_index.xml (Yoast);
+      post-sitemap.xml 200 with 279 URLs (278 posts), newest lastmod 2026-09-30, 3 changed in the last 90 days.
+
+  - id: how-we-montessori
+    name: How We Montessori
+    tier: 1
+    kind: activity
+    detection: listing
+    urls:
+      - https://www.howwemontessori.com/
+    domains: [howwemontessori.com]
+    include: ['howwemontessori\.com/how-we-montessori/\d{4}/\d{2}/']
+    philosophy: [montessori]
+    enabled: false
+    notes: >-
+      Disabled 2026-10-19: unreachable. HTTPS fails (certificate expired); http:// redirects to a
+      Network Solutions/Typepad page that returns Cloudflare 403. The blog was hosted on Typepad,
+      which shut down on 2025-09-30. Re-enable if the blog reappears on a new host.
+
+  - id: montessori-academy
+    name: Montessori Academy (blog)
+    tier: 1
+    kind: activity
+    detection: sitemap
+    urls:
+      - https://montessoriacademy.com.au/sitemap_index.xml
+    domains: [montessoriacademy.com.au]
+    child_sitemaps: ['/post-sitemap\d*\.xml']
+    philosophy: [montessori]
+    max_items_per_run: 10
+    notes: >-
+      2026-10-19: sitemap index 200 (Yoast, listed in robots.txt); post-sitemap.xml 200 with 179
+      URLs, 21 changed in the last 90 days, newest 2026-10-14. Some posts are company news and yield
+      no activity. robots.txt disallows /feed/, so the sitemap is the only option.
+
+  - id: montessori-from-the-heart
+    name: Montessori from the Heart
+    tier: 1
+    kind: activity
+    detection: sitemap
+    urls:
+      - https://montessorifromtheheart.com/sitemap.xml
+    domains: [montessorifromtheheart.com]
+    # sitemap.xml -> sitemap-index-1.xml -> sitemap-1.xml, sitemap-2.xml (image/video sitemaps skipped)
+    child_sitemaps: ['/sitemap(-index)?-\d+\.xml$']
+    include: ['montessorifromtheheart\.com/\d{4}/\d{2}/\d{2}/']
+    track_lastmod: false
+    philosophy: [montessori]
+    max_items_per_run: 10
+    notes: >-
+      2026-10-19: nested sitemap index 200; 911 dated post URLs, 7 posts dated in the last 30 days. Old posts get
+      their lastmod refreshed often (2016-2022 posts stamped 2026-10-13), so only new URLs count.
+
+  - id: reggio-inspired
+    name: Reggio-Inspired (Roots & Wings)
+    tier: 1
+    kind: activity
+    detection: sitemap
+    urls:
+      - https://reggio-inspired.com/sitemap.xml
+    domains: [reggio-inspired.com]
+    include: ['reggio-inspired\.com/blog/.+']
+    philosophy: [reggio_emilia]
+    max_items_per_run: 10
+    notes: >-
+      Most-cited Reggio source in data/activities.json (11 items). 2026-10-19: Squarespace sitemap
+      200, 53 URLs, newest lastmod 2025-10-09. robots.txt blocks AI crawlers by name only; the
+      default group allows /blog/.
+
+  - id: an-everyday-story
+    name: An Everyday Story
+    tier: 1
+    kind: activity
+    detection: sitemap
+    urls:
+      - https://aneverydaystory.wordpress.com/sitemap.xml
+    domains: [aneverydaystory.wordpress.com]
+    include: ['aneverydaystory\.wordpress\.com/\d{4}/\d{2}/\d{2}/']
+    philosophy: [reggio_emilia]
+    max_items_per_run: 10
+    notes: >-
+      Cited 6 times in data/activities.json. 2026-10-19: WordPress.com sitemap 200, 180 URLs, newest
+      lastmod 2026-05-20, so new posts are rare.
+
+  # ------------------------------------------------------------------------------------------
+  # Singapore outing sources, tier 1 (SDD §8.2.2)
+  # ------------------------------------------------------------------------------------------
+
+  - id: nlb-libcal
+    name: NLB events (LibCal)
+    tier: 1
+    kind: outing
+    detection: feed
+    urls:
+      - https://nlb.libcal.com/rss.php?cid=11498&m=month
+    domains: [nlb.libcal.com, nlb.gov.sg]
+    # Matched against title, description and the LibCal audience tags ("Babies (<1 yo)", "Toddlers (1-3 yo)").
+    keywords: [baby, babies, toddler, toddlers, storytime, story time, Early READ]
+    max_items_per_run: 15
+    notes: >-
+      2026-10-19: RSS 200, 3.1 MB, 300 items (the feed's cap). Audience tags: 10 Babies, 16 Toddlers.
+      45 items match the keywords; most "Storytime at X Library" sessions are tagged 4-12 yo, so the
+      age gate drops them later.
+
+  - id: onepa
+    name: OnePA (People's Association)
+    tier: 1
+    kind: outing
+    detection: sitemap
+    urls:
+      - https://www.onepa.gov.sg/sitemap.xml
+    domains: [onepa.gov.sg]
+    child_sitemaps: ['/sitemap-event\.xml', '/sitemap-course\.xml']
+    include: ['onepa\.gov\.sg/(events|courses)/']
+    # Course and event URLs carry the title as a slug, so keywords filter on the slug.
+    keywords: [baby, babies, toddler, infant, newborn, parent-child, parent-and-child, playgroup, tots]
+    track_lastmod: false
+    max_items_per_run: 10
+    notes: >-
+      2026-10-19: sitemap index 200 with 6 children (child URLs carry a ?rev= hash that changes).
+      sitemap-course.xml 3,902 URLs, sitemap-event.xml 2,152 URLs; 162 match the keywords. Every
+      lastmod is re-stamped daily, so only new URLs count. Detail pages are server-rendered.
+
+  - id: esplanade
+    name: Esplanade
+    tier: 1
+    kind: outing
+    detection: sitemap
+    urls:
+      - https://www.esplanade.com/sitemap.xml
+    domains: [esplanade.com]
+    include: ['esplanade\.com/whats-on/']
+    keywords: [playtime, octoburst, baby, babies, toddler, children, kids, family, families, little]
+    track_lastmod: false
+    max_items_per_run: 10
+    notes: >-
+      2026-10-19: sitemap 200, 3,407 URLs (408 under /whats-on/<year>/, 1,796 under festivals and
+      series). Lastmod is re-stamped in bulk (1,462 URLs on 2026-06-25), so only new URLs count.
+      PLAYtime! pages live under /whats-on/festivals-and-series/playtime/<year>/.
+
+  - id: mandai
+    name: Mandai Wildlife Reserve (Zoo, Bird Paradise, River Wonders, Night Safari)
+    tier: 1
+    kind: outing
+    detection: sitemap
+    urls:
+      - https://www.mandai.com/content/wrs/en.sitemap.xml
+    domains: [mandai.com]
+    include: ['mandai\.com/en/discover-mandai/events/', 'mandai\.com/en/about-mandai/media-centre/']
+    max_items_per_run: 8
+    notes: >-
+      2026-10-19: sitemap 200 (from robots.txt), 918 URLs; 30 event pages and 200+ media releases
+      (seasonal programmes are announced there). robots.txt disallows /api/ and *json only.
+
+  - id: national-gallery
+    name: National Gallery Singapore
+    tier: 1
+    kind: outing
+    detection: sitemap
+    urls:
+      - https://www.nationalgallery.sg/sitemap.xml
+    domains: [nationalgallery.sg]
+    include: ['nationalgallery\.sg/sg/en/(workshops|festivals|exhibitions|guided-tours|the-gallery-edit)/']
+    keywords: [family, families, kids, child, children, parent, toddler, baby, babies, little, tots, keppel centre]
+    max_items_per_run: 8
+    notes: >-
+      2026-10-19: sitemap 200, 1,277 URLs, 230 changed in the last 90 days (lastmod looks genuine).
+      Family programmes appear under /workshops/ and /festivals/ (e.g. Trick-or-Treat-Family-Fun-2026).
+
+  - id: sentosa
+    name: Sentosa
+    tier: 1
+    kind: outing
+    detection: sitemap
+    urls:
+      - https://www.sentosa.com.sg/sitemap.xml
+    domains: [sentosa.com.sg]
+    include: ['sentosa\.com\.sg/en/things-to-do/events/']
+    exclude: ['horror', '[-/]race[-/]', 'marathon', 'wine', 'beer', 'party']
+    track_lastmod: false
+    max_items_per_run: 8
+    notes: >-
+      2026-10-19: sitemap 200, 685 URLs, 69 event pages. Lastmod re-stamped in bulk (424 URLs on
+      2026-05-11), so only new URLs count.
+
+  - id: visit-singapore
+    name: Visit Singapore (STB)
+    tier: 1
+    kind: outing
+    detection: sitemap
+    urls:
+      - https://www.visitsingapore.com/sitemap.xml
+    domains: [visitsingapore.com]
+    include: ['visitsingapore\.com/whats-happening/']
+    max_items_per_run: 8
+    notes: >-
+      2026-10-19: English sitemap 200, 129 URLs; 19 under /whats-happening/ (festivals and major
+      events). Other language sitemaps are ignored.
+
+  - id: gardens-by-the-bay
+    name: Gardens by the Bay
+    tier: 1
+    kind: outing
+    detection: sitemap
+    urls:
+      - https://www.gardensbythebay.com.sg/en.sitemap.xml
+    domains: [gardensbythebay.com.sg]
+    include: ['gardensbythebay\.com\.sg/en/things-to-do/calendar-of-events/.+\.html']
+    max_items_per_run: 8
+    notes: >-
+      Planned as listing diff, but 2026-10-19 the listing page
+      (/en/things-to-do/calendar-of-events.html, 200) renders events with JavaScript: its HTML has
+      no event links. A sitemap now exists (robots.txt -> en.sitemap.xml, 200, 587 URLs, 20 event
+      pages, no lastmod), so new-URL diff on the sitemap is used instead.
+
+  - id: nparks
+    name: NParks events
+    tier: 1
+    kind: outing
+    detection: sitemap
+    urls:
+      - https://www.nparks.gov.sg/sitemap/sitemap.xml
+    domains: [nparks.gov.sg]
+    include: ['nparks\.gov\.sg/visit/events/event-detail/']
+    # Event slugs rarely say who an event is for, so no keyword filter; recurring adult tours and
+    # talks are excluded and the age gate drops the rest.
+    exclude: ['-tour(-session-\d)?$', 'speaker-series', 'donation', 'oil-painting', 'japanese', 'korean']
+    max_items_per_run: 5
+    notes: >-
+      Planned as listing diff, but 2026-10-19 the listing page (/visit/events, 200) loads events with
+      JavaScript (no event links in the HTML). The sitemap (robots.txt -> /sitemap/sitemap.xml, 200,
+      1,204 URLs, 179 event pages, no lastmod) is used instead. Event pages are server-rendered.
+      A family/kids keyword filter matched 0 of 178 event slugs, so exclusions are used instead.
+
+  - id: science-centre-kidsstop
+    name: Science Centre Singapore (KidsSTOP)
+    tier: 1
+    kind: outing
+    detection: listing
+    urls:
+      - https://www.science.edu.sg/whats-on
+    domains: [science.edu.sg]
+    include: ['science\.edu\.sg/whats-on/.+', 'science\.edu\.sg/visit/kidsstop']
+    enabled: false
+    notes: >-
+      Disabled 2026-10-19: unreachable for non-browser clients. Every URL (including robots.txt)
+      returns HTTP 202 with an AWS WAF JavaScript challenge and no content.
+
+  - id: childrens-museum
+    name: Children's Museum Singapore (Heritage.sg)
+    tier: 1
+    kind: outing
+    detection: listing
+    urls:
+      - https://www.heritage.sg/childrensmuseum/whats-on
+    domains: [heritage.sg, childrensmuseum.sg]
+    include: ['heritage\.sg/childrensmuseum/.+']
+    enabled: false
+    notes: >-
+      Disabled 2026-10-19: unreachable. heritage.sg returns CloudFront 403 for every URL including
+      robots.txt; childrensmuseum.sg redirects there. nhb.gov.sg and roots.gov.sg return an AWS WAF
+      challenge (202).
+
+  - id: changi-airport
+    name: Changi Airport events
+    tier: 1
+    kind: outing
+    detection: listing
+    urls:
+      - https://www.changiairport.com/en/happenings/events-directory.html
+    domains: [changiairport.com]
+    include: ['changiairport\.com/en/happenings/events-directory/.+\.html']
+    max_items_per_run: 8
+    notes: >-
+      2026-10-19: listing 200, 11 event links (also covers joint Changi + Jewel events). A sitemap
+      index exists but the listing is smaller and current.
+
+  - id: jewel
+    name: Jewel Changi Airport
+    tier: 1
+    kind: outing
+    detection: listing
+    urls:
+      - https://www.jewelchangiairport.com/en.html
+    domains: [jewelchangiairport.com]
+    include: ['jewelchangiairport\.com/en/(attractions|promotion)/.+\.html']
+    exclude: ['privilege', 'voucher', 'reward', 'telegram', 'student', 'promotions\.html']
+    max_items_per_run: 5
+    notes: >-
+      2026-10-19: home page 200 (no robots.txt: 404 = allowed); /en/events.html is 404. The news
+      page links only to PDF releases, so the home page's attraction and promotion links are diffed.
+      Seasonal events also appear in the Changi events directory.
+
+  - id: marina-bay-sands
+    name: Marina Bay Sands (incl. ArtScience Museum)
+    tier: 1
+    kind: outing
+    detection: listing
+    urls:
+      - https://www.marinabaysands.com/guides/exceptional-experiences/whats-on-at-mbs.html
+    domains: [marinabaysands.com]
+    include: ['marinabaysands\.com/(entertainment/(events|shows)|museum/exhibitions)/.+\.html']
+    max_items_per_run: 8
+    notes: >-
+      2026-10-19: /whats-on.html redirects to the home page; the monthly "What's on at MBS" guide
+      (200) links to current shows, events and ArtScience Museum exhibitions.
+
+  - id: river-hongbao
+    name: River Hongbao
+    tier: 1
+    kind: outing
+    detection: listing
+    urls:
+      - https://www.riverhongbao.sg/
+    domains: [riverhongbao.sg]
+    include: ['riverhongbao\.sg/[a-z0-9-]+\.html$']
+    exclude: ['index\.html$']
+    frequency: monthly
+    max_items_per_run: 5
+    notes: >-
+      2026-10-19: home page 200 (robots.txt 404 = allowed), 36 links; static pages such as
+      event-info.html, fun-guide.html, highlights.html (2026 edition). Checked monthly.
+
+  - id: chinatown-festivals
+    name: Chinatown Festivals (Kreta Ayer)
+    tier: 1
+    kind: outing
+    detection: listing
+    urls:
+      - https://chinatownfestivals.sg/
+    domains: [chinatownfestivals.sg]
+    include: ['chinatownfestivals\.sg/.+']
+    exclude: ['/wp-content/', '/wp-json/', '/feed/?$', '/comments/']
+    frequency: monthly
+    max_items_per_run: 5
+    notes: >-
+      2026-10-19: home page 200, 18 links (currently the 2027 CNY centrepiece vote). No sitemap
+      (sitemap_index.xml 404). Checked monthly.
+
+  - id: orchard-road
+    name: Orchard Road (ORBA, Christmas on A Great Street)
+    tier: 1
+    kind: outing
+    detection: listing
+    urls:
+      - https://orchardroad.org/
+      - https://orchardroad.org/play
+    domains: [orchardroad.org]
+    include: ['orchardroad\.org/.+']
+    exclude: ['/business', '/shop', '/stay', '/eatdrink', '/contact', '/privacy', '/about-orba', '/feed', '/wp-', '/comments']
+    frequency: monthly
+    max_items_per_run: 5
+    notes: >-
+      2026-10-19: www.orchardroad.org redirects to orchardroad.org; home 200 (39 links) and /play
+      200 (34 links). Christmas on A Great Street (Nov-Jan) is a section of /play with no own page
+      yet, so the listing currently yields only the PLAY/LIVE pages. Checked monthly.
+
+  - id: christmas-wonderland
+    name: Christmas Wonderland
+    tier: 1
+    kind: outing
+    detection: listing
+    urls:
+      - https://christmaswonderland.sg/
+    domains: [christmaswonderland.sg]
+    include: ['christmaswonderland\.sg/.+']
+    exclude: ['/wp-content/', '/feed/?$', '/comments/', '/tickets']
+    frequency: monthly
+    max_items_per_run: 5
+    notes: >-
+      2026-10-19: home page 200, 29 links; still shows the 2025 closure page ("stay tuned").
+      /event-info/ redirects to the home page. Checked monthly.
+
+  # ------------------------------------------------------------------------------------------
+  # Aggregators, tier 2 (discovery only; never the source of record)
+  # ------------------------------------------------------------------------------------------
+
+  - id: honeykids-asia
+    name: Honeykids Asia
+    tier: 2
+    kind: outing
+    detection: feed
+    urls:
+      - https://honeykidsasia.com/feed/
+    domains: [honeykidsasia.com]
+    keywords: [weekend, things to do, what's on, whats on, happening, event, festival, exhibition, workshop, playground, holiday, outing, attraction]
+    max_items_per_run: 10
+    notes: >-
+      2026-10-19: RSS 200 (www. redirects to the bare domain), 2.6 MB, 100 items.
+
+  - id: sassy-mama-sg
+    name: Sassy Mama Singapore
+    tier: 2
+    kind: outing
+    detection: feed
+    urls:
+      - https://www.sassymamasg.com/feed/
+    domains: [sassymamasg.com]
+    keywords: [weekend, things to do, what's on, whats on, happening, event, festival, exhibition, workshop, playground, holiday, outing, attraction]
+    max_items_per_run: 10
+    notes: >-
+      2026-10-19: RSS 200, 4.6 MB, 100 items. One of three requests failed with ECONNRESET
+      (retry succeeded later), so expect occasional errors.
+
+  - id: little-day-out
+    name: Little Day Out
+    tier: 2
+    kind: outing
+    detection: feed
+    urls:
+      - https://www.littledayout.com/feed/
+    domains: [littledayout.com]
+    max_items_per_run: 10
+    notes: >-
+      2026-10-19: RSS 200, 10 items. Almost all posts are Singapore outings, so no keyword filter.
+
+  - id: theasianparent-sg
+    name: theAsianparent Singapore
+    tier: 2
+    kind: outing
+    detection: feed
+    urls:
+      - https://sg.theasianparent.com/feed
+    domains: [sg.theasianparent.com]
+    keywords: [weekend, things to do, what's on, whats on, happening, event, festival, exhibition, playground, holiday, outing, attraction]
+    max_items_per_run: 10
+    notes: >-
+      2026-10-19: RSS 200, 20 items. Mostly parenting articles, so a tight outing keyword filter.
