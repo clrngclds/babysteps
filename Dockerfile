@@ -7,7 +7,8 @@ COPY package.json package-lock.json .npmrc ./
 RUN npm ci --no-audit --no-fund
 COPY . .
 # .env.production sets NEXT_PUBLIC_VISIT_URL=/api/visit for this build.
-RUN npm run build && node server/precompress.mjs out
+RUN npm run build && node server/precompress.mjs out \
+ && chmod -R a+rX,go-w out server package.json
 
 # Stage 2: runtime. Node built-ins only, so no node_modules are copied.
 FROM node:22-bookworm-slim
