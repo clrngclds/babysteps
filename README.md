@@ -1,14 +1,14 @@
 # baby steps
 
 Mobile-first PWA for Singapore parents of children aged 0–36 months: milestones (CDC 2022), play
-ideas by month, Singapore outings, and an in-browser swipe recommender. Phase 1 is a local MVP:
-a fully static Next.js export with no server and no accounts. All user state stays on the device.
+ideas by month, Singapore outings, and an in-browser swipe recommender. The app is a static
+Next.js export with no accounts; all user state stays on the device. Phase 2 hosts it on Cloud Run
+(`web`, asia-southeast1) behind a small Node server: see `deploy/README.md`.
 
 Spec: `SDD_baby_development_app.md` (v0.3.3). Visual design: Option B "Garden".
 
 ## Requirements
 - Node 20+ (built and tested on Node 22), npm 10
-- Python 3 for `npm run serve` (or use any static file server)
 
 ## Commands
 ```sh
@@ -16,7 +16,8 @@ npm install
 npm run dev        # builds the catalog, then starts next dev on http://localhost:3000
 npm test           # Vitest unit tests (catalog, recommender, search, outings, filters, state, age, visit ping)
 npm run build      # catalog -> next build (static export to out/) -> generates out/sw.js
-npm run serve      # serves out/ on http://localhost:3000
+npm run precompress # optional: writes .br/.gz next to text assets in out/
+npm run serve      # serves out/ with server/server.mjs on http://localhost:3000
 npm run catalog    # only rebuild public/catalog/ from data/*.json
 npm run typecheck
 ```
@@ -37,10 +38,15 @@ src/lib/recommender/     in-browser recommender (§7), pure TypeScript
 src/lib/                 age, state (IndexedDB), filters, search (MiniSearch), outings, analytics stub
 tests/                   Vitest
 qa/                      optional headless-Chrome screenshot/audit scripts
+server/                  production server: static export, bucket-backed /catalog, POST /api/visit
+deploy/                  deploy.sh (idempotent GCP setup + Cloud Run deploy), cloudbuild.yaml
+Dockerfile               multi-stage image (Node 22 build, slim non-root runtime)
 ```
 
 ## Privacy
 Birth month/year, saves, swipes, filters and "tried it" feedback live in one IndexedDB record
-(`bd-state-v1`). Nothing is sent anywhere. The only network call that could carry data is the
-`visitPing()` stub (`{day_first, month_first}`), which is disabled unless `NEXT_PUBLIC_VISIT_URL`
-is set at build time. It is unset in Phase 1. Fonts are self-hosted. No third-party requests.
+(`bd-state-v1`). The only data sent is the once-a-day visit ping `{day_first, month_first}` to
+same-origin `/api/visit` (SDD §9.1). It is enabled in production builds by `.env.production`
+(`NEXT_PUBLIC_VISIT_URL=/api/visit`) and off in `next dev`. The server stores one BigQuery row
+(Singapore date + the two flags) and no IP, user agent or ID; request logs for that path are
+excluded from Cloud Logging. Fonts are self-hosted. No third-party requests.

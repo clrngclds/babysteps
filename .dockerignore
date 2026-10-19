@@ -1,0 +1,16 @@
+node_modules
+.next
+out
+public/catalog
+*.tsbuildinfo
+next-env.d.ts
+.git
+.gitignore
+.dockerignore
+Dockerfile
+deploy
+qa
+*.md
+*.bundle
+.env.local
+.env.*.local

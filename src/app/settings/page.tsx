@@ -5,6 +5,7 @@ import { useApp } from '@/components/AppProvider';
 import { PageHeader } from '@/components/PageHeader';
 import { BirthPicker } from '@/components/BirthPicker';
 import { birthLabel, monthsLabel } from '@/lib/age';
+import { VISIT_URL } from '@/lib/analytics';
 
 export default function SettingsPage() {
   const { birth, age, state, setBirth, clearData, setViewMonth } = useApp();
@@ -38,7 +39,9 @@ export default function SettingsPage() {
         <h2 className="sec">Privacy</h2>
         <p><strong>Saved on this phone only.</strong> Your child&apos;s birth month, saved ideas, swipes and filters stay in this browser. There&apos;s no account, and nothing about you or your child is sent to us. Searches are not stored or sent.</p>
         <p className="muted" style={{ marginTop: 8, fontSize: 13.5 }}>
-          The only thing the app may send is an anonymous &ldquo;someone visited today&rdquo; count, with no ID. It is switched off in this version.
+          {VISIT_URL
+            ? 'The only thing the app sends is an anonymous \u201csomeone visited today\u201d count, at most once a day, with no ID, birth month or page. Request logs for it are not kept.'
+            : 'The only thing the app may send is an anonymous \u201csomeone visited today\u201d count, with no ID. It is switched off in this build.'}
         </p>
         <h3 style={{ fontSize: 15, marginTop: 14 }}>Things that erase your data</h3>
         <ul style={{ paddingLeft: 20, fontSize: 14, marginTop: 4 }}>
