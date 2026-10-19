@@ -14,3 +14,10 @@ node icons.mjs <project>/public/icons/icon.svg <project>/public/icons   # re-ren
 ```
 
 The scripts expect Chrome at `/usr/bin/google-chrome`; edit `executablePath` if yours differs.
+
+`live.mjs` checks a deployed URL at 390×844: onboarding, Today, service worker registration and
+control, cache contents, the visit ping (expects 204), CSP violations, third-party requests, and
+Today / Milestones / activity detail with the network off. It writes screenshots to the given folder:
+```sh
+node live.mjs https://web-312918712586.asia-southeast1.run.app screenshots
+```
